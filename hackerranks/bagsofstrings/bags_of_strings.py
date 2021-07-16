@@ -9,9 +9,9 @@ def get_bloom_filters_for_bags(bags, n=1000, fp_prob=0.5):
     ----------
     bags : list of list of str
         The sets of strings to generate bloom filters for
-    n : int
+    n : int, default=1000
         Number of items expected to be in each bag
-    fp_prob : float
+    fp_prob : float, default=0.5
         False positive probability for bloom filter in decimal
 
     Returns
@@ -63,13 +63,13 @@ def generate_random_bags(bag_count=1000,
     """
     Parameters
     ----------
-    bag_count : int
+    bag_count : int, default=1000
         Number of sets of strings to generate
-    item_count : int
+    item_count : int, default=1000
         Number of strings per set
-    char_set : str
+    char_set : str, default=string.ascii_letters
         Characters to be used for random string generation
-    max_length : int
+    max_length : int, default=10
         Maximum length of each random string
 
     Returns
