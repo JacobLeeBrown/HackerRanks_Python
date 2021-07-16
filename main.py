@@ -7,7 +7,6 @@ logging.basicConfig(
 
 
 def main():
-
     logging.info("Hello World!")
 
 
