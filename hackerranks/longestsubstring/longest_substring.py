@@ -1,11 +1,22 @@
-# Given a string s
-# Return the length of the longest substring without repeating characters.
-
 
 def longest_substring(s):
+    """
+    Parameters
+    ----------
+    s : str
+        Target string to search
 
+    Returns
+    -------
+    int
+        Length of longest substring of `s` with no repeating characters
+    """
+
+    # Track the current longest substring
     max_substr_len = 0
+    # Track the last index of each character traversed
     char_to_last_idx = {}
+    # Index after farthest repeated character's last occurrence
     start_idx = 0
 
     for i, char in enumerate(s):
