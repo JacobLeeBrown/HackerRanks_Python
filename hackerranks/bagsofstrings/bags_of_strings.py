@@ -1,16 +1,15 @@
 import random
 import string
-from bloomfilter import BloomFilter
+import logging as lg
+from bloom_filter import BloomFilter
 
 
-def get_bloom_filters_for_bags(bags, n=1000, fp_prob=0.5):
+def get_bloom_filters_for_bags(bags, fp_prob=0.5):
     """
     Parameters
     ----------
     bags : list of list of str
         The sets of strings to generate bloom filters for
-    n : int, default=1000
-        Number of items expected to be in each bag
     fp_prob : float, default=0.5
         False positive probability for bloom filter in decimal
 
@@ -21,8 +20,7 @@ def get_bloom_filters_for_bags(bags, n=1000, fp_prob=0.5):
     """
     bloom_filters = []
     for bag in bags:
-        assert(len(bag) == n)
-        bf = BloomFilter(n, fp_prob)
+        bf = BloomFilter(len(bag), fp_prob)
         for item in bag:
             bf.add(item)
         bloom_filters.append(bf)
@@ -47,8 +45,13 @@ def get_bags_that_might_contain(bags, bloom_filters, target):
         The set of bags that may contain the target string. False positive rate
         depends on the initialization of the bloom filters.
     """
-    assert(len(bags) == len(bloom_filters))
     potential_bags = []
+    if len(bags) != len(bloom_filters):
+        lg.error("'bags' count ({}) not equal to 'bloom_filters' count ({})".format(
+            len(bags), len(bloom_filters)
+        ))
+        return potential_bags
+
     for i, bf in enumerate(bloom_filters):
         if bf.check(target):
             potential_bags.append(bags[i])
