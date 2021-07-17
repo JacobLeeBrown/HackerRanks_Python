@@ -26,6 +26,7 @@ def next_permutation(nums):
     # To get next greater permutation, take last number (swap) and, scanning
     # from right to left through the list, insert before first number that is
     # less than swap
+    # TODO: Well, that's not completely accurate, need to do shift and sort
     swap = nums[nums_len-1]
     for i in range(nums_len-2, -1, -1):
         if swap > nums[i]:
