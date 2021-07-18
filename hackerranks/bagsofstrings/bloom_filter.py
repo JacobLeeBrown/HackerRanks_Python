@@ -4,7 +4,7 @@ import mmh3
 
 class BloomFilter(object):
 
-    """ Class for Bloom filter, using murmur3 hash function. Modified from
+    """Class for Bloom filter, using murmur3 hash function. Modified from
     https://www.geeksforgeeks.org/bloom-filters-introduction-and-python-implementation/
         - Replaced usage of bitarray as to not require C compiler
         - Modified/fixed comments for understanding and convention

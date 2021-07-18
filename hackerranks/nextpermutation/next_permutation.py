@@ -1,15 +1,10 @@
-# Given a list of numbers,
-# Return the same list rearranged into the lexicographically next greater permutation. Ex: [1, 3, 2] -> [2, 1, 3]
-#   If such an arrangement is not possible (list already lexicographically greatest order), then return lowest order
-#       Ex: [3, 2, 1] -> [1, 2, 3]
-# The replacement must be in place and use only constant extra memory.
-
 
 def next_permutation(nums):
     """ Rearrange list into lexicographically next greater permutation. If such
     an arrangement is not possible (list is already in greatest permutation),
     then return the least permutation (numbers sorted in ascending order).
-    Operation is in-place and uses constant extra memory.
+    Operation is in-place and uses constant extra memory. Assumes `nums`
+    contains only non-negative elements.
 
     Parameters
     ----------
@@ -23,18 +18,63 @@ def next_permutation(nums):
     if nums_len <= 1:
         return
 
-    # To get next greater permutation, take last number (swap) and, scanning
-    # from right to left through the list, insert before first number that is
-    # less than swap
-    # TODO: Well, that's not completely accurate, need to do shift and sort
-    swap = nums[nums_len-1]
+    # Check if list is already in greatest permutation (elements in descending
+    # order). Simultaneously search for least-significant (right most) index to
+    # begin permutation operation.
+    start = -1
     for i in range(nums_len-2, -1, -1):
-        if swap > nums[i]:
-            nums.insert(i, swap)
-            nums.pop()  # Remove swap from end of list
-            return
+        if nums[i] < nums[i+1]:
+            start = i
+            break
 
-    # If we make it here, list is already at greatest permutation
+    # If we did not update start, list is already at greatest permutation
     # To get least permutation, simply reverse the list
-    nums.reverse()
-    return
+    if start == -1:
+        nums.reverse()
+        return
+
+    # If we've made it here, perform permute operation
+    _permute(nums, start)
+
+
+def _permute(nums, start):
+    """Permute nums[start:]. This only considers the 'least significant`
+    elements (from `start` to end) since permuting them will result in the next
+    permutation for the whole list thanks to the pre-processing of determining
+    the correct `start` index.
+    """
+    swap_idx = _find_permute_min_idx(nums, start)
+    # Perform initial permute swap
+    nums[start], nums[swap_idx] = nums[swap_idx], nums[start]
+    # Reverse the rest of the list, which is guaranteed to be in descending
+    # order at this point, and we want it in ascending order
+    _partial_reverse(nums, start+1)
+
+
+def _find_permute_min_idx(nums, start):
+    """Find index of minimum element in nums[start+1:] that is greater than
+    nums[start]. In other words, find the index to swap nums[start] with, so it
+    must be strictly greater so we don't swap duplicates.
+    """
+    low_bound = nums[start]
+    cur_min = -1
+    min_idx = -1
+    for i in range(start+1, len(nums)):
+        cur = nums[i]
+        # Only consider elements greater than nums[start]
+        if cur > low_bound:
+            if (cur_min == -1) or (cur_min >= cur):
+                cur_min = cur
+                min_idx = i
+    return min_idx
+
+
+def _partial_reverse(a, start):
+    """Reverse array `a` from `start` to end (a[start:]) in-place and with
+    constant extra memory.
+    """
+    rev_len = int((len(a) - start)/2)
+    for i in range(rev_len):
+        idx_1 = start + i
+        idx_2 = -(i + 1)
+        a[idx_1], a[idx_2] = a[idx_2], a[idx_1]

@@ -1,6 +1,6 @@
 
 def my_atoi(s):
-    """ Convert string to 32-bit signed integer following algorithm of C's atoi
+    """Convert string to 32-bit signed integer following algorithm of C's atoi
     function.
 
     Parameters
