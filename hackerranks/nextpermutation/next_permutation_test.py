@@ -2,7 +2,7 @@ import unittest
 from next_permutation import next_permutation
 
 
-class MyTestCase(unittest.TestCase):
+class TestNextPermutation(unittest.TestCase):
 
     def test_least_permutation(self):
         actual = [1, 2, 3]
@@ -86,7 +86,7 @@ class MyTestCase(unittest.TestCase):
 
         self.assertEqual(expected, actual)
 
-    def test_multi_digit_elems(self):
+    def test_multi_digit_elements(self):
         actual = [20, 21, 32, 55, 1000, 117, 99]
 
         next_permutation(actual)

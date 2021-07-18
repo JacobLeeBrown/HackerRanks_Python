@@ -2,7 +2,7 @@ import unittest
 from my_atoi import my_atoi
 
 
-class TestLongestSubstring(unittest.TestCase):
+class TestMyAtoi(unittest.TestCase):
 
     def test_normal_positive_int(self):
         s = "1234"
