@@ -4,13 +4,13 @@ import logging as lg
 from bloom_filter import BloomFilter
 
 
-def get_bloom_filters_for_bags(bags, fp_prob=0.5):
+def get_bloom_filters_for_bags(bags, fp_prob=0.25):
     """
     Parameters
     ----------
     bags : list of list of str
         The sets of strings to generate bloom filters for
-    fp_prob : float, default=0.5
+    fp_prob : float, default=0.25
         False positive probability for bloom filter in decimal
 
     Returns
