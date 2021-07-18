@@ -1,6 +1,8 @@
 
 def longest_substring(s):
-    """
+    """Determine the length of the longest substring of `s` with no repeating
+    characters.
+
     Parameters
     ----------
     s : str
