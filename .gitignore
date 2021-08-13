@@ -12,4 +12,4 @@ venv/
 ENV/
 
 # Specific files
-httprequests/port_scanner_output.txt
+hackerranks/httprequests/port_scanner_output.txt
