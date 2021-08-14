@@ -1,9 +1,11 @@
+# Original code from: https://www.pythonforbeginners.com/code-snippets-source-code/port-scanner-in-python
+
 import socket
 import sys
 from datetime import datetime
 
 
-COMMON_WEB_PORTS = [21, 22, 23, 80, 110, 110, 111, 143, 443, 465, 587, 993, 995]
+COMMON_WEB_PORTS = [21, 22, 23, 80, 110, 111, 143, 443, 465, 587, 993, 995]
 
 
 def _port_check(target_ip: str, target_port: int) -> int:
@@ -18,7 +20,6 @@ if __name__ == "__main__":
     remoteServer = input("Enter a remote host to scan: ")
     remoteServerIP = socket.gethostbyname(remoteServer)
 
-    # Print a nice banner with information on which host we are about to scan
     print("-" * 60)
     print("Please wait, scanning remote host", remoteServerIP)
     print("-" * 60)
@@ -26,8 +27,7 @@ if __name__ == "__main__":
     f = open("port_scanner_output.txt", "r+")
     f.write("{} --- {} --- Open Ports\n".format(remoteServer, remoteServerIP))
 
-    # Check what time the scan started
-    t1 = datetime.now()
+    start_time = datetime.now()
 
     try:
         # Check common ports first
@@ -64,8 +64,7 @@ if __name__ == "__main__":
     f.close()
 
     # Calculates the difference of time, to see how long it took to run the script
-    t2 = datetime.now()
-    total = t2 - t1
+    time_span = datetime.now() - start_time
 
     # Printing the information to screen
-    print("Scanning Completed in: ", total)
+    print("\nScanning Completed in: ", time_span)
