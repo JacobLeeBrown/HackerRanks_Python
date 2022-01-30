@@ -3,15 +3,17 @@
 import pandas as pd
 import requests
 import json
+from datetime import date
 
 HOURLY, DAILY = 3600, 86400
-
+MAX_RECORDS = 300
 
 def fetch_data(symbol, rate_s):
     pair_split = symbol.split('/')  # symbol must be in format XXX/XXX ie. BTC/EUR
     symbol = pair_split[0] + '-' + pair_split[1]
     url = f'https://api.pro.coinbase.com/products/{symbol}/candles?granularity={rate_s}'
     response = requests.get(url)
+
     if response.status_code == 200:  # check to make sure the response from server is good
         data = pd.DataFrame(json.loads(response.text), columns=['unix', 'low', 'high', 'open', 'close', 'volume'])
         data['date'] = pd.to_datetime(data['unix'], unit='s')  # convert to a readable date
@@ -21,10 +23,11 @@ def fetch_data(symbol, rate_s):
         if data is None:
             print("Did not return any data from Coinbase for this symbol")
         else:
-            data.to_csv(f'Coinbase_{pair_split[0] + pair_split[1]}_data.csv', index=False)
+            today = date.today().strftime("%Y-%m-%d")
+            data.to_csv(f'CoinbaseData_{symbol}_{today}.csv', index=False)
 
     else:
-        print("Did not receieve OK response from Coinbase API")
+        print("Did not receive OK response from Coinbase API")
 
 
 if __name__ == "__main__":

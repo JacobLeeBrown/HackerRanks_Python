@@ -13,3 +13,6 @@ ENV/
 
 # Specific files
 port_scanner_output.txt
+
+# CSVs
+*.csv
