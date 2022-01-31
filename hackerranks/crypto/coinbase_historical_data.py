@@ -12,6 +12,7 @@ import urllib.parse as urlp
 START_OF_2016 = 1451606400  # Jan. 1st, 2016 @ 00:00:00 GMT
 # The granularity field must be one of the following values: {60, 300, 900, 3600, 21600, 86400}
 MINUTE, FIVE_MINUTES, FIFTEEN_MINUTES, HOURLY, SIX_HOURS, DAILY = 60, 300, 900, 3600, 21600, 86400
+SECONDS_TO_GRANULARITY = {60: 'MINUTE', 300: 'FIVE_MINUTES', 900: 'FIFTEEN_MINUTES', 3600: 'HOURLY', 21600: 'SIX_HOURS', 86400: 'DAILY'}
 MAX_RECORDS = 300
 
 
@@ -78,18 +79,8 @@ def fetch_data_since(symbol, rate_s, start):
 
 
 def rate_s_to_string(rate_s):
-    if MINUTE == rate_s:
-        return 'MINUTE'
-    elif FIVE_MINUTES == rate_s:
-        return 'FIVE_MINUTES'
-    elif FIFTEEN_MINUTES == rate_s:
-        return 'FIFTEEN_MINUTES'
-    elif HOURLY == rate_s:
-        return 'HOURLY'
-    elif SIX_HOURS == rate_s:
-        return 'SIX_HOURS'
-    elif DAILY == rate_s:
-        return 'DAILY'
+    if SECONDS_TO_GRANULARITY[rate_s] is not None:
+        return SECONDS_TO_GRANULARITY[rate_s]
     else:
         return 'UNKNOWN_RATE'
 
