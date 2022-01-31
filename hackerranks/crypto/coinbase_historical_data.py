@@ -70,6 +70,8 @@ def fetch_data_since(symbol, rate_s, start):
         data['date'] = pd.to_datetime(data['unix'], unit='s')  # convert timestamp to a readable date
         data['vol_fiat'] = data['volume'] * data['close']      # approximate fiat volume
 
+        data.sort_values(by=['unix'], inplace=True)
+
         start_date = date.fromtimestamp(start).strftime("%Y%m%d")
         today = date.today().strftime("%Y%m%d")
         data.to_csv(f'CoinbaseData_{symbol}_{start_date}-{today}_{rate_s_to_string(rate_s)}.csv', index=False)
