@@ -6,13 +6,13 @@ MON, TUE, WED, THU, FRI, SAT, SUN = range(7)
 INT_TO_DOW = {0: 'MON', 1: 'TUE', 2: 'WED', 3: 'THU', 4: 'FRI', 5: 'SAT', 6: 'SUN'}
 
 
-def determine_best_day_of_week_from_data_start(filename):
+def best_dow(filename):
     data = pd.read_csv(filename)
     data = data.reset_index()
 
-    week_start = MON
-    week_low = (MON, -1)
     week_count = 0
+    week_low = (MON, -1)
+    week_start = MON
     lowest_day_counter = {MON: 0, TUE: 0, WED: 0, THU: 0, FRI: 0, SAT: 0, SUN: 0}
     # Expected columns: ['unix', 'low', 'high', 'open', 'close', 'volume', 'date', 'vol_fiat']
     for idx, row in data.iterrows():
@@ -30,18 +30,19 @@ def determine_best_day_of_week_from_data_start(filename):
 
     # Purposefully no final wrap-up logic -> Just ignore last partial week
     pretty_print_dow_results(lowest_day_counter)
+    print(f'    Total Weeks = {week_count}')
 
 
-def determine_best_day_of_week_rotating_start(filename):
+def best_dow_rot_start(filename):
     data = pd.read_csv(filename)
     data = data.reset_index()
 
-    week_start = MON
-    week_low = (MON, -1)
-    week_count = 0
-    lowest_day_counter = {MON: 0, TUE: 0, WED: 0, THU: 0, FRI: 0, SAT: 0, SUN: 0}
+    lowest_day_counter_agg = {MON: 0, TUE: 0, WED: 0, THU: 0, FRI: 0, SAT: 0, SUN: 0}
     # Expected columns: ['unix', 'low', 'high', 'open', 'close', 'volume', 'date', 'vol_fiat']
-    for key in lowest_day_counter:
+    for key in lowest_day_counter_agg:
+        week_count = 0
+        week_low = (MON, -1)
+        lowest_day_counter = {MON: 0, TUE: 0, WED: 0, THU: 0, FRI: 0, SAT: 0, SUN: 0}
         week_start = key
         skip = True
         print(f'### Beginning Analysis with Start of Week = {INT_TO_DOW[key]}')
@@ -55,6 +56,7 @@ def determine_best_day_of_week_rotating_start(filename):
                 week_low = (week_start, row['low'])
             elif (cur_date.weekday() == week_start) and (not skip):
                 lowest_day_counter[week_low[0]] += 1
+                lowest_day_counter_agg[week_low[0]] += 1
                 week_low = (week_start, row['low'])
                 week_count += 1
             else:
@@ -63,8 +65,62 @@ def determine_best_day_of_week_rotating_start(filename):
 
         # Purposefully no final wrap-up logic -> Just ignore last partial week
         pretty_print_dow_results(lowest_day_counter)
-        # Reset counters for next iteration
+        print(f'    Total Weeks = {week_count}')
+
+    print('### Overall Counts ###')
+    pretty_print_dow_results(lowest_day_counter_agg)
+
+
+def best_dow_low_volatility(filename):
+    data = pd.read_csv(filename)
+    data = data.reset_index()
+
+    lowest_day_counter_agg = {MON: 0, TUE: 0, WED: 0, THU: 0, FRI: 0, SAT: 0, SUN: 0}
+    # Expected columns: ['unix', 'low', 'high', 'open', 'close', 'volume', 'date', 'vol_fiat']
+    for key in lowest_day_counter_agg:
+        week_count = 0
+        weeks_skipped = 0
+        week_low = (MON, -1)
+        week_high = (MON, -1)
         lowest_day_counter = {MON: 0, TUE: 0, WED: 0, THU: 0, FRI: 0, SAT: 0, SUN: 0}
+        week_start = key
+        skip = True
+        print(f'### Beginning Analysis with Start of Week = {INT_TO_DOW[key]}')
+        for idx, row in data.iterrows():
+            cur_date = date.fromisoformat(row['date'])
+            if (cur_date.weekday() != week_start) and skip:
+                pass
+            elif (cur_date.weekday() == week_start) and skip:
+                skip = False
+                week_start = cur_date.weekday()
+                week_low = (week_start, row['low'])
+                week_high = (week_start, row['high'])
+            elif (cur_date.weekday() == week_start) and (not skip):
+                if _is_low_volatility(week_low[1], week_high[1], 0.1):
+                    lowest_day_counter[week_low[0]] += 1
+                    lowest_day_counter_agg[week_low[0]] += 1
+                    week_low = (week_start, row['low'])
+                    week_high = (week_start, row['high'])
+                else:
+                    weeks_skipped += 1
+                week_count += 1
+            else:
+                if row['low'] < week_low[1]:
+                    week_low = (cur_date.weekday(), row['low'])
+                if row['high'] > week_high[1]:
+                    week_low = (cur_date.weekday(), row['high'])
+
+        # Purposefully no final wrap-up logic -> Just ignore last partial week
+        pretty_print_dow_results(lowest_day_counter)
+        print(f'    Total Weeks = {week_count}')
+        print(f'    Weeks skipped = {weeks_skipped}\n')
+
+    print('### Overall Counts ###')
+    pretty_print_dow_results(lowest_day_counter_agg)
+
+
+def _is_low_volatility(low, high, threshold):
+    return ((high - low) / ((high + low) / 2.0)) <= threshold
 
 
 def pretty_print_dow_results(dow_counter_dict):
@@ -77,5 +133,4 @@ def pretty_print_dow_results(dow_counter_dict):
 
 
 if __name__ == "__main__":
-    # determine_best_day_of_week_from_data_start('CoinbaseData_BTC-USD_20220727-20220131_DAILY.csv')
-    determine_best_day_of_week_rotating_start('CoinbaseData_BTC-USD_20220727-20220131_DAILY.csv')
+    best_dow_low_volatility('CoinbaseData_BTC-USD_20220727-20220130_DAILY.csv')
