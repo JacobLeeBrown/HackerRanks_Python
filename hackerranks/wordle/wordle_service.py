@@ -1,6 +1,9 @@
 
 import csv
-from datetime import datetime, date
+import string
+from datetime import datetime, timedelta
+
+ALPHA_CHARACTERS = string.ascii_uppercase
 
 
 def get_all_used_words():
@@ -14,7 +17,7 @@ def get_all_used_words():
                 word_count += 1
             else:
                 row_date = datetime.strptime(row['date'], '%b %d %Y')
-                if row_date >= today:
+                if row_date >= (today + timedelta(days=7)):  # Offset for removed words
                     break
                 else:
                     word = row['word'].strip()
@@ -29,7 +32,7 @@ def get_all_used_words():
 
 def analyze_most_used_letters(words, should_print=False):
     letter_count = {}
-    letter_index_count = {}
+    letter_index_count = init_char_index_dict()
     for word in words:
         for i, letter in enumerate(word):
             # Overall occurrence count
@@ -39,20 +42,9 @@ def analyze_most_used_letters(words, should_print=False):
                 letter_count[letter] = 1
 
             # Occurrence per index count
-            if i in letter_index_count:
-                index_dict = letter_index_count[i]
-                if letter in index_dict:
-                    index_dict[letter] += 1
-                else:
-                    index_dict[letter] = 1
-                letter_index_count[i] = index_dict
-            else:
-                new_dict = {letter: 1}
-                letter_index_count[i] = new_dict
+            letter_index_count[letter][i] += 1
 
     letter_count = fill_alpha_dict(letter_count)
-    for i in letter_index_count.keys():
-        letter_index_count[i] = fill_alpha_dict(letter_index_count[i])
 
     if should_print:
         print('#### Overall Results')
@@ -63,8 +55,15 @@ def analyze_most_used_letters(words, should_print=False):
     return letter_count, letter_index_count
 
 
+def init_char_index_dict(char_set=ALPHA_CHARACTERS, word_len=5):
+    res = {}
+    for char in char_set:
+        res[char] = [0] * word_len
+    return res
+
+
 def fill_alpha_dict(d):
-    for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+    for letter in ALPHA_CHARACTERS:
         if letter not in d:
             d[letter] = 0
     return d
@@ -80,21 +79,43 @@ def pprint_alpha_dict(d):
 
 
 def pprint_2d_alpha_dict(dd):
-    for i in dd.keys():
-        print(f'  ## Index {i} Results')
-        pprint_alpha_dict(dd[i])
+    pad_count = 5
+    index_count = len(list(dd.values())[0])
+    max_counts = get_max_counts(dd)
+    header = '  '
+    for i in range(index_count):
+        header += str(i+1).rjust(pad_count)
+    print(header)
+
+    dd_sorted_key = sorted(dd.items(), key=lambda x: x[0])
+    for c, index_counts in dd_sorted_key:
+        row = f'{c}:'
+        for i, count in enumerate(index_counts):
+            val_str = str(count)
+            if count == max_counts[i]:
+                val_str = '*' + val_str
+            row += val_str.rjust(pad_count)
+        print(row)
 
 
-def get_words_of_length(n, save=False, output_file=''):
+def get_max_counts(dd):
+    index_count =  len(list(dd.values())[0])
+    max_counts = [0] * index_count
+    for i in range(index_count):
+        max_counts[i] = sorted(dd.values(), key=lambda x: x[i], reverse=True)[0][i]
+    return max_counts
+
+
+def get_words_of_length(input_file='words_alpha.txt', n=5, alpha_only=True, save=False, output_file=''):
     valid_words = {}
     count = 0
-    with open('words_alpha.txt') as word_file:
+    with open(input_file) as word_file:
         if save:
             out = open(output_file, 'w')
 
         for word in word_file:
             word = word.strip().upper()
-            if len(word) == n:
+            if len(word) == n and (not alpha_only or word.isalpha()):
                 valid_words[word] = 1
                 count += 1
                 if save:
@@ -116,7 +137,7 @@ def load_words(input_file):
 def score_word(word, letter_count, letter_index_count):
     score = 0
     for i, letter in enumerate(word):
-        score += letter_index_count[i][letter]
+        score += letter_index_count[letter][i]
     return score
 
 
@@ -143,7 +164,7 @@ if __name__ == '__main__':
     print('Begin wordle_service')
     # wordle_words = get_all_used_words()
     # analyze_most_used_letters(wordle_words)
-    # get_words_of_length(5, save=True, output_file='possible_wordle_words.txt')
+    # get_words_of_length(input_file='scrabble_dict.txt', n=5, alpha_only=True, save=True, output_file='possible_wordle_words.txt')
 
     possible_wordle_words = load_words('possible_wordle_words.txt')
     analysis = analyze_most_used_letters(get_all_used_words(), should_print=True)
