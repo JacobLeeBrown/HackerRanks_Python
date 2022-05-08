@@ -92,9 +92,9 @@ if __name__ == '__main__':
     analysis = was.analyze_most_used_letters(get_all_used_words(), should_print=True)
 
     # Example usage
-    # correct_ = [['H'], ['O'], [], ['E'], ['R']]
-    # close_ = [[], [], [], [], []]
-    # wrong_ = ['S', 'A', 'V']
+    # correct_ = [[], [], [], [], []]
+    # close_ = [[], [], ['A'], ['C'], []]
+    # wrong_ = 'STLEBRIKDOUGH'
 
     # No Hints
     correct_ = [[], [], [], [], []]
