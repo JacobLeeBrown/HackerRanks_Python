@@ -39,24 +39,74 @@ def get_words_of_length(input_file='words_alpha.txt', n=5, alpha_only=True, outp
         if save:
             out.close()
 
-    print(f'{count} words of length {n} found')
+    print(f'{count} lines of length {n} found')
     return valid_words
 
 
 def load_words(input_file):
-    """ Reads all words from target input file and returns them as a set.
+    """ Reads all lines from target input file and returns them as a set.
 
     Parameters
     ----------
     input_file : str
-        Name of input file with newline-delimited words.
+        Name of input file with newline-delimited lines.
 
     Returns
     -------
-    words : set of str
+    lines : set of str
         Words from input file.
     """
     with open(input_file) as word_file:
         words = set(word_file.read().split())
 
     return words
+
+
+def file_diff(file_a, file_b, output_file):
+    """ Assumes both `file_a` and `file_b` are newline-delimited lists and
+    writes any entries that are in the former but not the latter to
+    `output_file`.
+
+    Parameters
+    ----------
+    file_a : str
+        Name of file for left side of set difference operation.
+    file_b : str
+        Name of file for right side of set difference operation.
+    output_file : str
+        Name of file to write result to.
+    """
+    words_a = load_words(file_a)
+    words_b = load_words(file_b)
+    words_diff = words_a - words_b
+    word_count = 0
+    with open(output_file, 'w') as out_file:
+        for word in words_diff:
+            out_file.write(word + '\n')
+            word_count += 1
+
+    print(f'Found {len(words_diff)} lines in {file_a} not in {file_b}.\n'
+          f'Successfully wrote {word_count} to {output_file}')
+
+
+def add_to_file(lines, file):
+    """ Adds entries of `lines` to the end of `file`, putting each on a newline.
+    Will only write entries not already in `file`.
+
+    Parameters
+    ----------
+    lines : set of str
+        Lines to append to the end of the target file.
+    file : str
+        Name of file to append lines to.
+    """
+    lines_a = load_words(file)
+    new_entries = lines - lines_a
+    with open(file, 'a') as file_:
+        file_.write('\n'.join(new_entries))
+
+
+if __name__ == '__main__':
+    print('Begin file_service')
+    # file_diff('possible_wordle_words.txt', 'possible_wordle_words_simple.txt', 'ignored_words.txt')
+    print('End file_service')
