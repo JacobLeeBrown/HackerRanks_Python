@@ -47,14 +47,43 @@ def analyze_most_used_letters(words, should_print=False):
     return letter_count, letter_index_count
 
 
-def _init_char_index_dict(char_set=string.ascii_uppercase, word_len=5):
+def _init_char_index_dict(key_set=string.ascii_uppercase, val_len=5):
+    """ Initializes a dictionary with keys listed in `key_set`, and the values
+    are int lists of length `val_len`, with each entry being 0.
+
+    Parameters
+    ----------
+    key_set : iterable, default=string.ascii_uppercase
+        Set of key values for new dictionary.
+    val_len : int, default=5
+        The length of the dictionary's values.
+
+    Returns
+    -------
+    res : dict
+        New dictionary initialized with the given parameters.
+    """
     res = {}
-    for char in char_set:
-        res[char] = [0] * word_len
+    for char in key_set:
+        res[char] = [0] * val_len
     return res
 
 
 def _fill_dict(d, key_set=string.ascii_uppercase):
+    """ Fills the given dictionary with missing keys defined by `key_set`.
+
+    Parameters
+    ----------
+    d : dict
+        Target dictionary to fill.
+    key_set : iterable, default=string.ascii_uppercase
+        Set of key values `d` should have.
+
+    Returns
+    -------
+    d : dict
+        Passed dictionary with missing keys defaulted to 0.
+    """
     for key in key_set:
         if key not in d:
             d[key] = 0
@@ -62,6 +91,29 @@ def _fill_dict(d, key_set=string.ascii_uppercase):
 
 
 def find_best_words(words, letter_count, letter_index_count, n=10, should_print=False):
+    """ Determines best entries from `words` based on scoring system, using
+    statistics from `letter_count` and `letter_index_count`.
+
+    Parameters
+    ----------
+    words : set of str
+        Set of words to score.
+    letter_count : dict
+        Dictionary with key-value pairs of character-int, representing the
+        overall count of the character.
+    letter_index_count : dict
+        Dictionary with key-value pairs of character-list of int, representing
+        the per-index count of the character.
+    n : int, default=10
+        The number of top scoring words to return.
+    should_print : bool, default=False
+        True to print top words to console.
+
+    Returns
+    -------
+    best_words : set of str
+        The best scoring words.
+    """
     best_words = []
     for word in words:
         word_score = _score_word(word, letter_count, letter_index_count)

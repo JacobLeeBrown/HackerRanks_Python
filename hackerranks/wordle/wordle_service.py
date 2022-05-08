@@ -76,8 +76,8 @@ def _solver_check_empty(correct, close, wrong):
 
 def _init_close_dict(close):
     d = {}
-    for list in close:
-        for letter in list:
+    for letters in close:
+        for letter in letters:
             d[letter] = False
     return d
 
