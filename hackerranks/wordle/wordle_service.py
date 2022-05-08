@@ -30,10 +30,12 @@ def get_all_used_words():
 
 
 def solver(words, correct, close, wrong):
+    if _solver_check_empty(correct, close, wrong):
+        return words
     possible_words = []
     for word in words:
         word_matches = True
-        close_dict = init_close_dict(close)
+        close_dict = _init_close_dict(close)
         for i, letter in enumerate(word):
             # Conditions for word not being a match
             if letter in wrong:
@@ -62,7 +64,17 @@ def solver(words, correct, close, wrong):
     return possible_words
 
 
-def init_close_dict(close):
+def _solver_check_empty(correct, close, wrong):
+    if correct != [[]]*len(correct):
+        return False
+    if close != [[]]*len(close):
+        return False
+    if len(wrong) != 0:
+        return False
+    return True
+
+
+def _init_close_dict(close):
     d = {}
     for list in close:
         for letter in list:
@@ -80,10 +92,11 @@ if __name__ == '__main__':
     analysis = was.analyze_most_used_letters(get_all_used_words(), should_print=True)
 
     # Example usage
-    # correct = [['H'], ['O'], [], ['E'], ['R']]
-    # close = [[], [], [], [], []]
-    # wrong = ['S', 'A', 'V']
+    # correct_ = [['H'], ['O'], [], ['E'], ['R']]
+    # close_ = [[], [], [], [], []]
+    # wrong_ = ['S', 'A', 'V']
 
+    # No Hints
     correct_ = [[], [], [], [], []]
     close_ = [[], [], [], [], []]
     wrong_ = []

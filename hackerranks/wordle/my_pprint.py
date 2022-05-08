@@ -39,7 +39,7 @@ def pprint_2d_alpha_dict(dd):
     """
     pad_count = 6
     index_count = len(list(dd.values())[0])
-    max_counts = get_max_counts(dd)
+    max_counts = _get_max_counts(dd)
     header = '  '
     for i in range(index_count):
         header += str(i+1).rjust(pad_count)
@@ -56,7 +56,7 @@ def pprint_2d_alpha_dict(dd):
         print(row)
 
 
-def get_max_counts(dd):
+def _get_max_counts(dd):
     """ Determines the max values per-index of the given dictionary's values,
     assumed to be list of ints.
         Ex:

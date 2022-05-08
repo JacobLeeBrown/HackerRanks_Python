@@ -24,7 +24,7 @@ def analyze_most_used_letters(words, should_print=False):
         counts of how much it occurred in each index in the given set of words.
     """
     letter_count = {}
-    letter_index_count = init_char_index_dict()
+    letter_index_count = _init_char_index_dict()
     for word in words:
         for i, letter in enumerate(word):
             # Overall occurrence count
@@ -36,7 +36,7 @@ def analyze_most_used_letters(words, should_print=False):
             # Occurrence per index count
             letter_index_count[letter][i] += 1
 
-    letter_count = fill_dict(letter_count)
+    letter_count = _fill_dict(letter_count)
 
     if should_print:
         print('#### Overall Results')
@@ -47,41 +47,41 @@ def analyze_most_used_letters(words, should_print=False):
     return letter_count, letter_index_count
 
 
-def init_char_index_dict(char_set=string.ascii_uppercase, word_len=5):
+def _init_char_index_dict(char_set=string.ascii_uppercase, word_len=5):
     res = {}
     for char in char_set:
         res[char] = [0] * word_len
     return res
 
 
-def fill_dict(d, key_set=string.ascii_uppercase):
+def _fill_dict(d, key_set=string.ascii_uppercase):
     for key in key_set:
         if key not in d:
             d[key] = 0
     return d
 
 
-def score_word(word, letter_count, letter_index_count):
+def find_best_words(words, letter_count, letter_index_count, n=10, should_print=False):
+    best_words = []
+    for word in words:
+        word_score = _score_word(word, letter_count, letter_index_count)
+        best_words = _update_top_x(best_words, (word, word_score), n)
+
+    if should_print:
+        print(f'Best {n} Words: {best_words}')
+    return best_words
+
+
+def _score_word(word, letter_count, letter_index_count):
     score = 0
     for i, letter in enumerate(word):
         score += letter_index_count[letter][i]
     return score
 
 
-def update_top_x(items, elem, n):
+def _update_top_x(items, elem, n):
     items.append(elem)
     items = sorted(items, key=lambda x: x[1], reverse=True)
     if len(items) > n:
         items = items[:-1]
     return items
-
-
-def find_best_words(words, letter_count, letter_index_count, n=10, should_print=False):
-    best_words = []
-    for word in words:
-        word_score = score_word(word, letter_count, letter_index_count)
-        best_words = update_top_x(best_words, (word, word_score), n)
-
-    if should_print:
-        print(f'Best {n} Words: {best_words}')
-    return best_words
