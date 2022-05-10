@@ -91,7 +91,7 @@ if __name__ == '__main__':
     # fs.get_words_of_length(input_file='scrabble_dict.txt', n=5, alpha_only=True, save=True, output_file='possible_wordle_words.txt')
 
     used_words = get_all_used_words()
-    fs.add_to_file(set(used_words), 'ignored_words.txt')
+    fs.add_to_file({used_words[-1]}, 'ignored_words.txt')  # Add newest word to ignored list
     ignored_words = fs.load_words('ignored_words.txt')
     possible_wordle_words = fs.load_words('possible_wordle_words_simple.txt')
     analysis = was.analyze_most_used_letters(used_words, should_print=True)
@@ -104,7 +104,7 @@ if __name__ == '__main__':
     # No Hints
     correct = [[], [], [], [], []]
     close = [[], [], [], [], []]
-    wrong = []
+    wrong = ''
 
     potential_solutions = solver(possible_wordle_words, ignored_words, correct, close, wrong)
     was.find_best_words(potential_solutions, analysis[0], analysis[1], n=20, should_print=True)
