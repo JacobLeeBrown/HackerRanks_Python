@@ -30,12 +30,39 @@ def get_all_used_words():
 
 
 def solver(words, ignored_words_, correct_, close_, wrong_):
+    """ Determines potential Wordle solutions from universal set `words` not in
+    subset `ignored_words_`, further narrowing down options using information
+    such as correct letters, close letters, and wrong letters outputted by
+    Wordle.
+
+    Parameters
+    ----------
+    words : set of str
+        All potential Wordle words.
+    ignored_words_ : set of str
+        Words deemed unlikely or impossible to be Wordle solutions (such as
+        prior solutions), thus ignored by solver algorithm.
+    correct_ : list of list of str
+        Letters guessed to be in the correct spot. The position in outer list
+        corresponds to the position within the solution.
+    close_ : list of list of str
+        Letters guessed to be in the solution, but not the right position. The
+        position in the outer list corresponds to the position within the
+        solution.
+    wrong_ : str
+        Letters guessed to not be in the solution, concatenated into a single
+        string.
+
+    Returns
+    -------
+    possible_words : set of str
+        Potential solutions based on the given parameters.
+    """
+    words_ = words - ignored_words_
     if _solver_check_empty(correct_, close_, wrong_):
-        return words
-    possible_words = []
-    for word in words:
-        if word in ignored_words_:
-            continue
+        return words_
+    possible_words = set()
+    for word in words_:
         word_matches = True
         close_dict = _init_close_dict(close_)
         for i, letter in enumerate(word):
@@ -61,7 +88,7 @@ def solver(words, ignored_words_, correct_, close_, wrong_):
 
         # If word still matches, then it's a candidate
         if word_matches:
-            possible_words.append(word)
+            possible_words.add(word)
 
     return possible_words
 
@@ -84,17 +111,48 @@ def _init_close_dict(close_):
     return d
 
 
+def my_splice(list_, indices_str):
+    """ Returns elements of `list_` based on the comma-delimited index
+    expressions in `indices_str`.
+
+    Parameters
+    ----------
+    list_ : list
+        List of items to select from.
+    indices_str : str
+        Comma-delimited index expressions, representing which elements to pull
+        out from the passed list. Ex: '0,2,4-6,10'
+
+    Returns
+    -------
+    res : set
+        Set of items denoted by `indices_str` from `list_`.
+    """
+    res = set()
+    indices = indices_str.split(',')
+    for ind_exp in indices:
+        if '-' in ind_exp:
+            bounds = ind_exp.split('-')
+            for i in range(int(bounds[0]), int(bounds[1])+1):
+                res.add(list_[i])
+        elif ind_exp.isdigit():
+            res.add(list_[int(ind_exp)])
+        else:
+            print('Cannot parse index expression: ' + ind_exp)
+    return res
+
+
 if __name__ == '__main__':
     print('Begin wordle_service')
-    # wordle_words = get_all_used_words()
-    # was.analyze_most_used_letters(wordle_words)
-    # fs.get_words_of_length(input_file='scrabble_dict.txt', n=5, alpha_only=True, save=True, output_file='possible_wordle_words.txt')
 
+    # Data Prep
     used_words = get_all_used_words()
     fs.add_to_file({used_words[-1]}, 'ignored_words.txt')  # Add newest word to ignored list
     ignored_words = fs.load_words('ignored_words.txt')
     possible_wordle_words = fs.load_words('possible_wordle_words_simple.txt')
-    analysis = was.analyze_most_used_letters(used_words, should_print=True)
+    analysis = was.analyze_most_used_letters(used_words, should_print=False)
+
+    # Solving
 
     # Example usage
     # correct = [[], [], [], [], []]
@@ -106,7 +164,26 @@ if __name__ == '__main__':
     close = [[], [], [], [], []]
     wrong = ''
 
-    potential_solutions = solver(possible_wordle_words, ignored_words, correct, close, wrong)
-    was.find_best_words(potential_solutions, analysis[0], analysis[1], n=20, should_print=True)
+    while True:
+        potential_solutions = solver(possible_wordle_words, ignored_words, correct, close, wrong)
+        best_solutions = was.find_best_words(potential_solutions, analysis[0], analysis[1], n=20, should_print=False)
+
+        print('#### Ignored Potential Solutions')
+        ignored_solutions = solver(ignored_words, set(), correct, close, wrong)
+        was.find_best_words(ignored_solutions, analysis[0], analysis[1], n=20, should_print=True)
+        print('####')
+
+        for i, item in enumerate(best_solutions):
+            print(f'{str(i).rjust(3)} = {item}')
+
+        print('Select words to remove by denoting their indices. Ex: "1,3-4,7". "q" or "quit" to stop.')
+        user_input = input()
+        if user_input.lower() in {'q', 'quit'}:
+            break
+
+        words_to_remove = my_splice([x[0] for x in best_solutions], user_input)
+        print(f'Removed words = {words_to_remove}')
+        fs.add_to_file(words_to_remove, 'ignored_words.txt')
+        ignored_words = ignored_words.union(words_to_remove)
 
     print('End wordle_service')

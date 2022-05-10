@@ -77,8 +77,10 @@ def file_diff(file_a, file_b, output_file):
         Name of file to write result to.
     """
     words_a = load_words(file_a)
+    print(f'{file_a} total count = {len(words_a)}')
     words_b = load_words(file_b)
-    words_diff = words_a - words_b
+    print(f'{file_b} total count = {len(words_b)}')
+    words_diff = sorted(words_a - words_b)
     word_count = 0
     with open(output_file, 'w') as out_file:
         for word in words_diff:
@@ -108,5 +110,8 @@ def add_to_file(lines, file):
 
 if __name__ == '__main__':
     print('Begin file_service')
-    # file_diff('possible_wordle_words.txt', 'possible_wordle_words_simple.txt', 'ignored_words.txt')
+    # Update ignored words to account for manual removals from simple word list
+    # file_diff('scrabble_dict.txt', 'possible_wordle_words_simple.txt', 'ignored_words.txt')
+    # Update simple word list to remove ignored words
+    # file_diff('possible_wordle_words_simple.txt', 'ignored_words.txt', 'possible_wordle_words_simple.txt')
     print('End file_service')
