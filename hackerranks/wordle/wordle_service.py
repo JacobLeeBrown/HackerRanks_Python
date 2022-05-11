@@ -166,7 +166,7 @@ if __name__ == '__main__':
 
     while True:
         potential_solutions = solver(possible_wordle_words, ignored_words, correct, close, wrong)
-        best_solutions = was.find_best_words(potential_solutions, analysis[0], analysis[1], n=20, should_print=False)
+        best_solutions = was.find_best_words(potential_solutions, analysis[0], analysis[1], n=10, should_print=False)
 
         print('#### Ignored Potential Solutions')
         ignored_solutions = solver(ignored_words, set(), correct, close, wrong)

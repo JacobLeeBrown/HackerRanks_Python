@@ -105,7 +105,13 @@ def add_to_file(lines, file):
     lines_a = load_words(file)
     new_entries = lines - lines_a
     with open(file, 'a') as file_:
-        file_.write('\n'.join(new_entries))
+        file_.write('\n' + '\n'.join(new_entries))
+
+
+def sort_file(file):
+    sorted_lines = sorted(load_words(file))
+    with open(file, 'w') as file_:
+        file_.write('\n'.join(sorted_lines))
 
 
 if __name__ == '__main__':
