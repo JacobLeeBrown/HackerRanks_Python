@@ -147,6 +147,7 @@ if __name__ == '__main__':
 
     # Data Prep
     used_words = get_all_used_words()
+    print(f'Last 10 Wordle Words: {used_words[-10:]}')
     fs.add_to_file({used_words[-1]}, 'ignored_words.txt')  # Add newest word to ignored list
     ignored_words = fs.load_words('ignored_words.txt')
     possible_wordle_words = fs.load_words('possible_wordle_words_simple.txt')
@@ -166,15 +167,17 @@ if __name__ == '__main__':
 
     while True:
         potential_solutions = solver(possible_wordle_words, ignored_words, correct, close, wrong)
-        best_solutions = was.find_best_words(potential_solutions, analysis[0], analysis[1], n=10, should_print=False)
+        best_solutions = was.find_best_words(potential_solutions, analysis[0], analysis[1], n=20, should_print=False)
 
         print('#### Ignored Potential Solutions')
         ignored_solutions = solver(ignored_words, set(), correct, close, wrong)
-        was.find_best_words(ignored_solutions, analysis[0], analysis[1], n=20, should_print=True)
+        was.find_best_words(ignored_solutions, analysis[0], analysis[1], n=10, should_print=True)
         print('####')
 
+        print('#### Best Potential Solutions')
         for i, item in enumerate(best_solutions):
             print(f'{str(i).rjust(3)} = {item}')
+        print('####')
 
         print('Select words to remove by denoting their indices. Ex: "1,3-4,7". "q" or "quit" to stop.')
         user_input = input()

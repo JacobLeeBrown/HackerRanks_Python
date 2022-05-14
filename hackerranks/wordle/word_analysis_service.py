@@ -120,10 +120,8 @@ def find_best_words(words, letter_count, letter_index_count, n=10, should_print=
         best_words = _update_top_x(best_words, (word, word_score), n)
 
     if should_print:
-        if n > len(best_words):
-            print(f'Only Options: {best_words}')
-        else:
-            print(f'Best {n} Words: {best_words}')
+        print("The Best Options Are:")
+        print(best_words)
     return best_words
 
 
