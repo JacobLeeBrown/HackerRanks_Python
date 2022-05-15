@@ -142,16 +142,14 @@ def my_splice(list_, indices_str):
     return res
 
 
-if __name__ == '__main__':
-    print('Begin wordle_service')
-
+def analysis_with_user_input():
     # Data Prep
     used_words = get_all_used_words()
     print(f'Last 10 Wordle Words: {used_words[-10:]}')
     fs.add_to_file({used_words[-1]}, 'ignored_words.txt')  # Add newest word to ignored list
     ignored_words = fs.load_words('ignored_words.txt')
     possible_wordle_words = fs.load_words('possible_wordle_words_simple.txt')
-    analysis = was.analyze_most_used_letters(used_words, should_print=False)
+    analysis = was.analyze_most_used_letters(used_words, should_print=True)
 
     # Solving
 
@@ -189,4 +187,40 @@ if __name__ == '__main__':
         fs.add_to_file(words_to_remove, 'ignored_words.txt')
         ignored_words = ignored_words.union(words_to_remove)
 
+
+def simple_analysis():
+    # Data Prep
+    used_words = get_all_used_words()
+    print(f'Last 10 Wordle Words: {used_words[-10:]}')
+    fs.add_to_file({used_words[-1]}, 'ignored_words.txt')  # Add newest word to ignored list
+    ignored_words = fs.load_words('ignored_words.txt')
+    possible_wordle_words = fs.load_words('possible_wordle_words_simple.txt')
+    analysis = was.analyze_most_used_letters(used_words, should_print=False)
+
+    # Solving
+
+    # Example usage
+    # correct = [[], [], [], [], []]
+    # close = [[], [], ['A'], ['C'], []]
+    # wrong = 'STLEBRIKDOUGH'
+
+    # No Hints
+    correct = [[], [], [], [], []]
+    close = [[], [], [], [], []]
+    wrong = ''
+
+    potential_solutions = solver(possible_wordle_words, ignored_words, correct, close, wrong)
+    print('#### Potential Solutions')
+    was.find_best_words(potential_solutions, analysis[0], analysis[1], n=20, should_print=True)
+    print('####')
+
+    print('#### Ignored Potential Solutions')
+    ignored_solutions = solver(ignored_words, set(), correct, close, wrong)
+    was.find_best_words(ignored_solutions, analysis[0], analysis[1], n=10, should_print=True)
+    print('####')
+
+
+if __name__ == '__main__':
+    print('Begin wordle_service')
+    simple_analysis()
     print('End wordle_service')
