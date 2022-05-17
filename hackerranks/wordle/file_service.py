@@ -102,10 +102,14 @@ def add_to_file(lines, file):
     file : str
         Name of file to append lines to.
     """
+    print(f'Passed lines total count = {len(lines)}')
     lines_a = load_words(file)
+    print(f'{file} total line count = {len(lines_a)}')
     new_entries = lines - lines_a
     with open(file, 'a') as file_:
         file_.write('\n' + '\n'.join(new_entries))
+
+    print(f'Wrote {len(new_entries)} lines in passed lines not in {file} to {file}.')
 
 
 def sort_file(file):
@@ -116,8 +120,13 @@ def sort_file(file):
 
 if __name__ == '__main__':
     print('Begin file_service')
-    # Update ignored words to account for manual removals from simple word list
+    # Update ignored words (from scratch) to account for manual removals from simple word list
     # file_diff('scrabble_dict.txt', 'possible_wordle_words_simple.txt', 'ignored_words.txt')
     # Update simple word list to remove ignored words
     # file_diff('possible_wordle_words_simple.txt', 'ignored_words.txt', 'possible_wordle_words_simple.txt')
+
+    # Update ignored words (append to) to account for manual removals from simple word list
+    # file_diff('possible_wordle_words.txt', 'possible_wordle_words_simple.txt', 'temp_diff.txt')
+    # add_to_file(load_words('temp_diff.txt'), 'ignored_words.txt')
+    # sort_file('ignored_words.txt')
     print('End file_service')
