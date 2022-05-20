@@ -146,6 +146,7 @@ def analysis_with_user_input():
     # Data Prep
     used_words = get_all_used_words()
     print(f'Last 10 Wordle Words: {used_words[-10:]}')
+    fs.add_to_file({used_words[-1]}, 'used_wordle_words.txt')  # Add newest word to used list
     fs.add_to_file({used_words[-1]}, 'ignored_words.txt')  # Add newest word to ignored list
     ignored_words = fs.load_words('ignored_words.txt')
     possible_wordle_words = fs.load_words('possible_wordle_words_simple.txt')
@@ -192,6 +193,7 @@ def simple_analysis():
     # Data Prep
     used_words = get_all_used_words()
     print(f'Last 10 Wordle Words: {used_words[-10:]}')
+    fs.add_to_file({used_words[-1]}, 'used_wordle_words.txt')  # Add newest word to used list
     fs.add_to_file({used_words[-1]}, 'ignored_words.txt')  # Add newest word to ignored list
     ignored_words = fs.load_words('ignored_words.txt')
     possible_wordle_words = fs.load_words('possible_wordle_words_simple.txt')
@@ -223,4 +225,5 @@ def simple_analysis():
 if __name__ == '__main__':
     print('Begin wordle_service')
     simple_analysis()
+    # analysis_with_user_input()
     print('End wordle_service')
