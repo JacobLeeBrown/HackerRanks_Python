@@ -142,7 +142,7 @@ def my_splice(list_, indices_str):
     return res
 
 
-def analysis_with_user_input():
+def analysis_with_user_input(correct_, close_, wrong_):
     # Data Prep
     used_words = get_all_used_words()
     print(f'Last 10 Wordle Words: {used_words[-10:]}')
@@ -153,23 +153,12 @@ def analysis_with_user_input():
     analysis = was.analyze_most_used_letters(used_words, should_print=True)
 
     # Solving
-
-    # Example usage
-    # correct = [[], [], [], [], []]
-    # close = [[], [], ['A'], ['C'], []]
-    # wrong = 'STLEBRIKDOUGH'
-
-    # No Hints
-    correct = [[], [], [], [], []]
-    close = [[], [], [], [], []]
-    wrong = ''
-
     while True:
-        potential_solutions = solver(possible_wordle_words, ignored_words, correct, close, wrong)
+        potential_solutions = solver(possible_wordle_words, ignored_words, correct_, close_, wrong_)
         best_solutions = was.find_best_words(potential_solutions, analysis[0], analysis[1], n=20, should_print=False)
 
         print('#### Ignored Potential Solutions')
-        ignored_solutions = solver(ignored_words, set(), correct, close, wrong)
+        ignored_solutions = solver(ignored_words, set(), correct_, close_, wrong_)
         was.find_best_words(ignored_solutions, analysis[0], analysis[1], n=10, should_print=True)
         print('####')
 
@@ -187,9 +176,10 @@ def analysis_with_user_input():
         print(f'Removed words = {words_to_remove}')
         fs.add_to_file(words_to_remove, 'ignored_words.txt')
         ignored_words = ignored_words.union(words_to_remove)
+    fs.sort_file('ignored_words.txt')
 
 
-def simple_analysis():
+def simple_analysis(correct_, close_, wrong_):
     # Data Prep
     used_words = get_all_used_words()
     print(f'Last 10 Wordle Words: {used_words[-10:]}')
@@ -200,30 +190,29 @@ def simple_analysis():
     analysis = was.analyze_most_used_letters(used_words, should_print=False)
 
     # Solving
-
-    # Example usage
-    # correct = [[], [], [], [], []]
-    # close = [[], [], ['A'], ['C'], []]
-    # wrong = 'STLEBRIKDOUGH'
-
-    # No Hints
-    correct = [[], [], [], [], []]
-    close = [[], [], [], [], []]
-    wrong = ''
-
-    potential_solutions = solver(possible_wordle_words, ignored_words, correct, close, wrong)
+    potential_solutions = solver(possible_wordle_words, ignored_words, correct_, close_, wrong_)
     print('#### Potential Solutions')
     was.find_best_words(potential_solutions, analysis[0], analysis[1], n=20, should_print=True)
     print('####')
 
     print('#### Ignored Potential Solutions')
-    ignored_solutions = solver(ignored_words, set(), correct, close, wrong)
+    ignored_solutions = solver(ignored_words, set(), correct_, close_, wrong_)
     was.find_best_words(ignored_solutions, analysis[0], analysis[1], n=10, should_print=True)
     print('####')
 
 
 if __name__ == '__main__':
     print('Begin wordle_service')
-    simple_analysis()
-    # analysis_with_user_input()
+    # Example usage
+    # correct = [['S'], [], [], [], []]
+    # close = [[], [], ['A'], ['R'], []]
+    # wrong = 'LTEGOUD'
+
+    # No Hints
+    correct = [[], [], [], [], []]
+    close = [[], [], [], [], []]
+    wrong = ''
+
+    # simple_analysis(correct, close, wrong)
+    analysis_with_user_input(correct, close, wrong)
     print('End wordle_service')
