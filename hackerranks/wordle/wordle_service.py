@@ -145,7 +145,6 @@ def my_splice(list_, indices_str):
 def analysis_with_user_input(correct_, close_, wrong_):
     # Data Prep
     used_words = get_all_used_words()
-    print(f'Last 10 Wordle Words: {used_words[-10:]}')
     fs.add_to_file({used_words[-1]}, 'used_wordle_words.txt')  # Add newest word to used list
     fs.add_to_file({used_words[-1]}, 'ignored_words.txt')  # Add newest word to ignored list
     ignored_words = fs.load_words('ignored_words.txt')
@@ -157,6 +156,7 @@ def analysis_with_user_input(correct_, close_, wrong_):
         potential_solutions = solver(possible_wordle_words, ignored_words, correct_, close_, wrong_)
         best_solutions = was.find_best_words(potential_solutions, analysis[0], analysis[1], n=20, should_print=False)
 
+        print(f'Last 10 Wordle Words: {used_words[-10:]}')
         print('#### Ignored Potential Solutions')
         ignored_solutions = solver(ignored_words, set(), correct_, close_, wrong_)
         was.find_best_words(ignored_solutions, analysis[0], analysis[1], n=10, should_print=True)
@@ -182,13 +182,13 @@ def analysis_with_user_input(correct_, close_, wrong_):
 def simple_analysis(correct_, close_, wrong_):
     # Data Prep
     used_words = get_all_used_words()
-    print(f'Last 10 Wordle Words: {used_words[-10:]}')
     fs.add_to_file({used_words[-1]}, 'used_wordle_words.txt')  # Add newest word to used list
     fs.add_to_file({used_words[-1]}, 'ignored_words.txt')  # Add newest word to ignored list
     ignored_words = fs.load_words('ignored_words.txt')
     possible_wordle_words = fs.load_words('possible_wordle_words_simple.txt')
     analysis = was.analyze_most_used_letters(used_words, should_print=False)
 
+    print(f'Last 10 Wordle Words: {used_words[-10:]}')
     # Solving
     potential_solutions = solver(possible_wordle_words, ignored_words, correct_, close_, wrong_)
     print('#### Potential Solutions')
