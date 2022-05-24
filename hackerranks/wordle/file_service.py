@@ -106,8 +106,9 @@ def add_to_file(lines, file):
     lines_a = load_words(file)
     print(f'{file} total line count = {len(lines_a)}')
     new_entries = lines - lines_a
-    with open(file, 'a') as file_:
-        file_.write('\n' + '\n'.join(new_entries))
+    if len(new_entries) != 0:
+        with open(file, 'a') as file_:
+            file_.write('\n' + '\n'.join(new_entries))
 
     print(f'Wrote {len(new_entries)} lines in passed lines not in {file} to {file}.')
 

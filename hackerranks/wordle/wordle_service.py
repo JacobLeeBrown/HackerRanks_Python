@@ -213,6 +213,6 @@ if __name__ == '__main__':
     close = [[], [], [], [], []]
     wrong = ''
 
-    # simple_analysis(correct, close, wrong)
-    analysis_with_user_input(correct, close, wrong)
+    simple_analysis(correct, close, wrong)
+    # analysis_with_user_input(correct, close, wrong)
     print('End wordle_service')
