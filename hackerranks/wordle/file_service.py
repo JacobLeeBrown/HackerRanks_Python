@@ -103,14 +103,27 @@ def add_to_file(lines, file):
         Name of file to append lines to.
     """
     print(f'Passed lines total count = {len(lines)}')
-    lines_a = load_words(file)
-    print(f'{file} total line count = {len(lines_a)}')
-    new_entries = lines - lines_a
+    file_lines = load_words(file)
+    print(f'{file} total line count = {len(file_lines)}')
+    new_entries = lines - file_lines
     if len(new_entries) != 0:
         with open(file, 'a') as file_:
             file_.write('\n' + '\n'.join(new_entries))
 
     print(f'Wrote {len(new_entries)} lines in passed lines not in {file} to {file}.')
+
+
+def remove_from_file(lines, file):
+    print(f'Passed lines total count = {len(lines)}')
+    file_lines = load_words(file)
+    print(f'{file} total line count = {len(file_lines)}')
+    unique_entries = file_lines - lines
+    if len(unique_entries) != 0:
+        with open(file, 'w') as file_:
+            file_.write('\n'.join(unique_entries))
+
+    print(f'Found {len(file_lines)-len(unique_entries)} words to remove from {file}.')
+    print(f'Wrote {len(unique_entries)} lines to {file}.')
 
 
 def sort_file(file):
@@ -123,6 +136,7 @@ if __name__ == '__main__':
     print('Begin file_service')
     # Update ignored words (from scratch) to account for manual removals from simple word list
     # file_diff('scrabble_dict.txt', 'possible_wordle_words_simple.txt', 'ignored_words.txt')
+
     # Update simple word list to remove ignored words
     # file_diff('possible_wordle_words_simple.txt', 'ignored_words.txt', 'possible_wordle_words_simple.txt')
 
