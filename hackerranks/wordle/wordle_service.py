@@ -1,32 +1,87 @@
 
 import csv
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import file_service as fs
 import word_analysis_service as was
+
+
+WORDLE_LEN = 5
+FIRST_WORDLE_DATE = date(2021, 6, 16)
+DATE_IN_FORMAT = '%b %d %Y'
+DATE_OUT_FORMAT = '%Y-%m-%d'
+ALL_WORDLE_WORDS_FILE = 'all_wordle_words.csv'
+ACTUAL_WORDLE_WORDS_FILE = 'actual_wordle_words.csv'
+USED_WORDLE_WORDS_FILE = 'used_wordle_words.txt'
+IGNORED_WORDS_FILE = 'ignored_words.txt'
+POSSIBLE_WORD_FILE = 'possible_wordle_words_simple.txt'
 
 
 def get_all_used_words():
     used_words_ = []
     today = datetime.today()
-    with open('all_wordle_words.csv', mode='r') as csv_file:
+    with open(ALL_WORDLE_WORDS_FILE, mode='r') as csv_file:
         csv_reader = csv.DictReader(csv_file)
         word_count = 0
         for row in csv_reader:
             if word_count == 0:  # Header row
                 word_count += 1
             else:
-                row_date = datetime.strptime(row['date'], '%b %d %Y')
+                row_date = datetime.strptime(row['date'], DATE_IN_FORMAT)
                 if row_date >= (today + timedelta(days=7)):  # Offset for removed words
                     break
                 else:
                     word = row['word'].strip()
-                    if len(word) != 5:
+                    if len(word) != WORDLE_LEN:
                         pass  # Skip removed words
                     else:
                         used_words_.append(word)
                         word_count += 1
         print(f'Processed {word_count-1} used Wordle words.')
     return used_words_
+
+
+def write_actual_used_words(out_file=ACTUAL_WORDLE_WORDS_FILE):
+    today = datetime.today()
+    with open(ALL_WORDLE_WORDS_FILE, mode='r') as f_in:
+        with open(out_file, mode='w', newline='') as f_out:
+            csv_reader = csv.DictReader(f_in)
+            csv_writer = csv.writer(f_out)
+            row_idx = 0
+            true_date = today
+            skipped_offset = 0
+            for row in csv_reader:
+                word = row['word'].strip()
+                row_date = datetime.strptime(row['date'], DATE_IN_FORMAT)
+
+                if row_idx == 0:  # Header row
+                    csv_writer.writerow(row.keys())
+                    true_date = (row_date - timedelta(days=3))  # More must've been skipped then list details
+
+                if len(word) != WORDLE_LEN:
+                    print(f'Skipping word: {row_date} - {word}')
+                    skipped_offset += 1
+                elif row_date >= (today + timedelta(days=skipped_offset)):
+                    print(f'Caught up on Wordle Words. Count = {row_idx}, Skipped = {skipped_offset}')
+                    break
+                else:
+                    row_idx += 1
+                    id_str = f'Day {row_idx}'
+                    csv_writer.writerow([true_date.strftime(DATE_OUT_FORMAT), id_str, word])
+                    true_date = true_date + timedelta(days=1)
+    return
+
+
+def get_last_n_used_words(file_name=ACTUAL_WORDLE_WORDS_FILE, n=10):
+    today = datetime.today()
+    start_date = today - timedelta(days=n)
+    words_ = []
+    with open(file_name, mode='r') as f:
+        csv_reader = csv.DictReader(f)
+        for row in csv_reader:
+            row_date = datetime.strptime(row['date'], DATE_OUT_FORMAT)
+            if row_date >= start_date:
+                words_.append(row['word'])
+    return words_
 
 
 def solver(words, ignored_words_, correct_, close_, wrong_):
@@ -144,11 +199,9 @@ def my_splice(list_, indices_str):
 
 def analysis_with_user_input(correct_, close_, wrong_):
     # Data Prep
-    used_words = get_all_used_words()
-    fs.add_to_file({used_words[-1]}, 'used_wordle_words.txt')  # Add newest word to used list
-    fs.add_to_file({used_words[-1]}, 'ignored_words.txt')  # Add newest word to ignored list
-    ignored_words = fs.load_words('ignored_words.txt')
-    possible_wordle_words = fs.load_words('possible_wordle_words_simple.txt')
+    used_words = list(fs.load_words(USED_WORDLE_WORDS_FILE))
+    ignored_words = fs.load_words(IGNORED_WORDS_FILE)
+    possible_wordle_words = fs.load_words(POSSIBLE_WORD_FILE)
     analysis = was.analyze_most_used_letters(used_words, should_print=True)
 
     # Solving
@@ -156,7 +209,7 @@ def analysis_with_user_input(correct_, close_, wrong_):
         potential_solutions = solver(possible_wordle_words, ignored_words, correct_, close_, wrong_)
         best_solutions = was.find_best_words(potential_solutions, analysis[0], analysis[1], n=20, should_print=False)
 
-        print(f'Last 10 Wordle Words: {used_words[-10:]}')
+        print(f'Last 10 Wordle Words: {get_last_n_used_words(n=10)}')
         print('#### Ignored Potential Solutions')
         ignored_solutions = solver(ignored_words, set(), correct_, close_, wrong_)
         was.find_best_words(ignored_solutions, analysis[0], analysis[1], n=10, should_print=True)
@@ -170,25 +223,50 @@ def analysis_with_user_input(correct_, close_, wrong_):
         print('Select words to remove by denoting their indices. Ex: "1,3-4,7". "q" or "quit" to stop.')
         user_input = input()
         if user_input.lower() in {'q', 'quit'}:
+            print('Please enter the newest Wordle word:')
+            user_input = input()
+            quit_ = False
+            while len(user_input) != WORDLE_LEN:
+                if user_input.lower() in {'q', 'quit'}:
+                    print('Fine, be that way :P')
+                    quit_ = True
+                    break
+                print(f'Entered string \'{user_input}\' is not {WORDLE_LEN} characters. Please re-enter:')
+                user_input = input()
+            if quit_:
+                break
+            update_files_with_new_word(user_input)
+            print('Thank you! Don\'t have a nice day, have a great day!')
             break
 
         words_to_remove = my_splice([x[0] for x in best_solutions], user_input)
         print(f'Removed words = {words_to_remove}')
-        fs.add_to_file(words_to_remove, 'ignored_words.txt')
+        fs.add_to_file(words_to_remove, IGNORED_WORDS_FILE)
         ignored_words = ignored_words.union(words_to_remove)
-    fs.sort_file('ignored_words.txt')
+    fs.sort_file(USED_WORDLE_WORDS_FILE)
+    fs.sort_file(IGNORED_WORDS_FILE)
+
+
+def update_files_with_new_word(word):
+    word = word.upper()
+    fs.add_to_file({word}, USED_WORDLE_WORDS_FILE)
+    fs.add_to_file({word}, IGNORED_WORDS_FILE)
+
+    today = date.today()
+    today_id = (today - FIRST_WORDLE_DATE).days + 1
+    today_str = today.strftime(DATE_OUT_FORMAT)
+    csv_line = f'{today_str},Day {today_id},{word}'
+    fs.add_to_file({csv_line}, ACTUAL_WORDLE_WORDS_FILE)
 
 
 def simple_analysis(correct_, close_, wrong_):
     # Data Prep
-    used_words = get_all_used_words()
-    fs.add_to_file({used_words[-1]}, 'used_wordle_words.txt')  # Add newest word to used list
-    fs.add_to_file({used_words[-1]}, 'ignored_words.txt')  # Add newest word to ignored list
-    ignored_words = fs.load_words('ignored_words.txt')
-    possible_wordle_words = fs.load_words('possible_wordle_words_simple.txt')
+    used_words = list(fs.load_words(USED_WORDLE_WORDS_FILE))
+    ignored_words = fs.load_words(IGNORED_WORDS_FILE)
+    possible_wordle_words = fs.load_words(POSSIBLE_WORD_FILE)
     analysis = was.analyze_most_used_letters(used_words, should_print=False)
 
-    print(f'Last 10 Wordle Words: {used_words[-10:]}')
+    print(f'Last 10 Wordle Words: {get_last_n_used_words(n=10)}')
     # Solving
     potential_solutions = solver(possible_wordle_words, ignored_words, correct_, close_, wrong_)
     print('#### Potential Solutions')
@@ -213,6 +291,6 @@ if __name__ == '__main__':
     close = [[], [], [], [], []]
     wrong = ''
 
-    simple_analysis(correct, close, wrong)
-    # analysis_with_user_input(correct, close, wrong)
+    # simple_analysis(correct, close, wrong)
+    analysis_with_user_input(correct, close, wrong)
     print('End wordle_service')
