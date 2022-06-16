@@ -221,7 +221,7 @@ def analysis_with_user_input(correct_, close_, wrong_):
             print(f'{str(i).rjust(3)} = {item}')
         print('####')
 
-        quit_, ignored_words, correct_, close_, wrong_ = user_actions(best_solutions, ignored_words)
+        quit_, ignored_words, correct_, close_, wrong_ = user_actions(best_solutions, ignored_words, correct_, close_, wrong_)
 
         if quit_:
             _action_new_wordle_word()
@@ -233,8 +233,7 @@ def analysis_with_user_input(correct_, close_, wrong_):
     fs.sort_file(IGNORED_WORDS_FILE)
 
 
-def user_actions(words, ignored):
-    correct_, close_, wrong_ = [], [], ''
+def user_actions(words, ignored, correct_, close_, wrong_):
     while True:
         user_input = input('What would you like to do? R = remove words, U = update hints, N = next cycle, Q = quit : ')
         if user_input.lower() in {'r', 'remove'}:
