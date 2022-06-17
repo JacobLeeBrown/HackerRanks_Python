@@ -197,7 +197,11 @@ def my_splice(list_, indices_str):
     return res
 
 
-def analysis_with_user_input(correct_, close_, wrong_):
+def analysis_with_user_input(correct_=None, close_=None, wrong_=''):
+    if close_ is None:
+        close_ = []
+    if correct_ is None:
+        correct_ = []
     # Data Prep
     used_words = list(fs.load_words(USED_WORDS_SORTED_FILE))
     ignored_words = fs.load_words(IGNORED_WORDS_FILE)
