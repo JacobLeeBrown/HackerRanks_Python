@@ -3,6 +3,7 @@ import csv
 from datetime import datetime, timedelta, date
 import file_service as fs
 import word_analysis_service as was
+import math
 
 
 WORDLE_LEN = 5
@@ -217,12 +218,11 @@ def analysis_with_user_input(correct_=None, close_=None, wrong_=''):
         print(f'Last 10 Wordle Words: {last_n_words}')
         print('#### Ignored Potential Solutions')
         ignored_solutions = solver(ignored_words, set(), correct_, close_, wrong_)
-        was.find_best_words(ignored_solutions, analysis[0], analysis[1], n=10, should_print=True)
+        print_list_with_cols(was.find_best_words(ignored_solutions, analysis[0], analysis[1], n=10, should_print=False), 3)
         print('####')
 
         print('#### Best Potential Solutions')
-        for i, item in enumerate(best_solutions):
-            print(f'{str(i).rjust(3)} = {item}')
+        print_list_with_cols(best_solutions, 3)
         print('####')
 
         quit_, ignored_words, correct_, close_, wrong_ = user_actions(best_solutions, ignored_words, correct_, close_, wrong_)
@@ -235,6 +235,17 @@ def analysis_with_user_input(correct_=None, close_=None, wrong_=''):
 
     fs.sort_file(USED_WORDS_SORTED_FILE)
     fs.sort_file(IGNORED_WORDS_FILE)
+
+
+def print_list_with_cols(items, cols=2):
+    items_len = len(items)
+    rows = math.ceil(items_len / cols)
+    items_list = list(items)
+    for i in range(rows):
+        for j in range(cols):
+            if (i + (rows * j)) < items_len:
+                print(f'{str(i + (rows * j)).rjust(3)} = {items_list[i + (rows * j)]}     ', end='')
+        print()
 
 
 def user_actions(words, ignored, correct_, close_, wrong_):
