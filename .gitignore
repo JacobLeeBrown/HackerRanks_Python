@@ -13,6 +13,7 @@ ENV/
 
 # Specific files
 port_scanner_output.txt
+/hackerranks/wordle/temp_diff.txt
 
 # CSVs
 *.csv
