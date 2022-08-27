@@ -88,6 +88,13 @@ class TestLeetCode(unittest.TestCase):
         self._assertEqualLinkedList([-1, 0, 5, 3], sol.detectCycle(ln.from_list_and_tail_pointer([-1, 0, 5, 3], 0)), 4)
         self._assertEqualLinkedList([5, 3], sol.detectCycle(ln.from_list_and_tail_pointer([-1, 0, 5, 3], 2)), 2)
 
+    def test_max_profit(self):
+        self.assertEqual(0, sol.maxProfit([]))
+        self.assertEqual(0, sol.maxProfit([1]))
+        self.assertEqual(0, sol.maxProfit([3, 2, 1]))
+        self.assertEqual(6, sol.maxProfit([3, 2, 1, 7]))
+        self.assertEqual(9, sol.maxProfit([3, 2, 1, 7, 0, 9]))
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -147,6 +147,20 @@ class Solution:
             id_map[id(head)] = head
         return None
 
+    def maxProfit(self, prices: List[int]) -> int:
+        # 121
+        if len(prices) <= 1:
+            return 0
+        relative_min = prices[0]
+        best_profit = 0
+        for price in prices:
+            pot_profit = price - relative_min
+            if pot_profit > best_profit:
+                best_profit = pot_profit
+            elif price < relative_min:
+                relative_min = price
+        return best_profit
+
 
 if __name__ == '__main__':
     sol = Solution()
