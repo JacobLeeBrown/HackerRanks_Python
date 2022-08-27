@@ -104,6 +104,49 @@ class Solution:
                 moving_head = list2
                 list2 = list2.next
 
+    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        # 206
+        if head is None:
+            return head
+        last_node = None
+        cur_node = head
+        next_node = cur_node.next
+        while next_node is not None:
+            cur_node.next = last_node
+            last_node = cur_node
+            cur_node = next_node
+            next_node = cur_node.next
+        cur_node.next = last_node
+        return cur_node
+
+    def middleNode(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        # 876
+        i = 1
+        mid_node = head
+        cur_node = head
+        while cur_node is not None:
+            if i % 2 == 0:
+                mid_node = mid_node.next
+                i = 0
+            cur_node = cur_node.next
+            i += 1
+        return mid_node
+
+    def detectCycle(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        # 142
+        # Only faster than 20% of submissions, and only uses less memory than 10% of submissions
+        # TODO: Improve time and/or space complexity, try for O(1) space
+        if head is None or head.next is None:
+            return None
+
+        id_map = {id(head): head}
+        while head is not None:
+            head = head.next
+            if id(head) in id_map:
+                return id_map[id(head)]
+            id_map[id(head)] = head
+        return None
+
 
 if __name__ == '__main__':
     sol = Solution()

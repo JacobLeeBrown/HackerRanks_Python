@@ -38,8 +38,8 @@ class TestLeetCode(unittest.TestCase):
         self.assertEqual(False, sol.isSubsequence('aabc', 'asbcda'))
         self.assertEqual(True, sol.isSubsequence('aabc', 'asbcdabca'))
 
-    def _assertEqualLinkedList(self, list1: List[int], list2: Optional[ln.ListNode]):
-        list2_ = ln.to_list(list2)
+    def _assertEqualLinkedList(self, list1: List[int], list2: Optional[ln.ListNode], limit=-1):
+        list2_ = ln.to_list(list2, limit)
         self.assertEqual(list1, list2_)
 
     def test_merge_two_lists(self):
@@ -64,6 +64,29 @@ class TestLeetCode(unittest.TestCase):
                 ln.from_list([1, 2]),
                 ln.from_list([-1, 0, 0, 4]))
         )
+
+    def test_reverse_list(self):
+        self._assertEqualLinkedList([], sol.reverseList(None))
+        self._assertEqualLinkedList([1], sol.reverseList(ln.from_list([1])))
+        self._assertEqualLinkedList([1, 1], sol.reverseList(ln.from_list([1, 1])))
+        self._assertEqualLinkedList([3, 2, 1], sol.reverseList(ln.from_list([1, 2, 3])))
+
+    def test_middle_node(self):
+        self._assertEqualLinkedList([], sol.middleNode(None))
+        self._assertEqualLinkedList([1], sol.middleNode(ln.from_list([1])))
+        self._assertEqualLinkedList([2], sol.middleNode(ln.from_list([1, 2])))
+        self._assertEqualLinkedList([2, 3], sol.middleNode(ln.from_list([1, 2, 3])))
+        self._assertEqualLinkedList([4, 5, 6], sol.middleNode(ln.from_list([1, 2, 3, 4, 5, 6])))
+
+    def test_detect_cycle(self):
+        self._assertEqualLinkedList([], sol.detectCycle(None))
+        self._assertEqualLinkedList([], sol.detectCycle(ln.from_list_and_tail_pointer([1], -1)), 1)
+        self._assertEqualLinkedList([1], sol.detectCycle(ln.from_list_and_tail_pointer([1], 0)), 1)
+        self._assertEqualLinkedList([], sol.detectCycle(ln.from_list_and_tail_pointer([1, 1, 1], -1)))
+        self._assertEqualLinkedList([1, 1], sol.detectCycle(ln.from_list_and_tail_pointer([1, 1, 1], 1)), 2)
+        self._assertEqualLinkedList([3], sol.detectCycle(ln.from_list_and_tail_pointer([-1, 0, 5, 3], 3)), 1)
+        self._assertEqualLinkedList([-1, 0, 5, 3], sol.detectCycle(ln.from_list_and_tail_pointer([-1, 0, 5, 3], 0)), 4)
+        self._assertEqualLinkedList([5, 3], sol.detectCycle(ln.from_list_and_tail_pointer([-1, 0, 5, 3], 2)), 2)
 
 
 if __name__ == '__main__':
