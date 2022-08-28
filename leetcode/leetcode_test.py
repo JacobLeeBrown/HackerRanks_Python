@@ -95,6 +95,14 @@ class TestLeetCode(unittest.TestCase):
         self.assertEqual(6, sol.maxProfit([3, 2, 1, 7]))
         self.assertEqual(9, sol.maxProfit([3, 2, 1, 7, 0, 9]))
 
+    def test_longest_palindrome(self):
+        self.assertEqual(0, sol.longestPalindrome(''))
+        self.assertEqual(1, sol.longestPalindrome('a'))
+        self.assertEqual(1, sol.longestPalindrome('abcdef'))
+        self.assertEqual(1, sol.longestPalindrome('aA'))
+        self.assertEqual(8, sol.longestPalindrome('abcdabcd'))
+        self.assertEqual(9, sol.longestPalindrome('abcdeabcd'))
+
 
 if __name__ == '__main__':
     unittest.main()

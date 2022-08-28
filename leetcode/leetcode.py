@@ -1,6 +1,7 @@
 
 from typing import List, Optional
 from ListNode import ListNode
+from Node import Node
 
 my_list = ["1", 2, "three"]
 # Set
@@ -161,7 +162,40 @@ class Solution:
                 relative_min = price
         return best_profit
 
+    def longestPalindrome(self, s: str) -> int:
+        # 409
+        if len(s) <= 1:
+            return len(s)
+        char_count = {}
+        for char in s:
+            if char in char_count:
+                char_count[char] += 1
+            else:
+                char_count[char] = 1
+        have_odd = False
+        palindrome_length = 0
+        for key in char_count:
+            count = char_count[key]
+            if count % 2 == 0:
+                palindrome_length += count
+            elif not have_odd:
+                palindrome_length += count
+                have_odd = True
+            else:
+                palindrome_length += (count - 1)
+        return palindrome_length
+
+    def preorder(self, root: Node) -> List[int]:
+        # 589
+        # TODO: setup testing framework and unit tests
+        if root is None:
+            return []
+
+        sub_preorder = [root.val]
+        for child in root.children:
+            sub_preorder += self.preorder(child)
+        return sub_preorder
+
 
 if __name__ == '__main__':
     sol = Solution()
-    print(sol.pivotIndex([2, 1, -1]))
