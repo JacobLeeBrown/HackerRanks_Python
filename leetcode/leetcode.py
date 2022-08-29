@@ -1,7 +1,7 @@
 
 from typing import List, Optional
 from ListNode import ListNode
-from Node import Node
+from Nodes import Node, TreeNode
 
 my_list = ["1", 2, "three"]
 # Set
@@ -195,6 +195,23 @@ class Solution:
         for child in root.children:
             sub_preorder += self.preorder(child)
         return sub_preorder
+
+    def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
+        # 102
+        # Only faster than 20% of submissions, and only uses less memory than 10% of submissions
+        # TODO: Improve time and/or space complexity
+        return self.level_order_helper(root, [], 0)
+
+    def level_order_helper(self, root: Optional[TreeNode], res: List[List[int]], level: int) -> List[List[int]]:
+        if root is None:
+            return res
+        if level >= len(res):
+            res.append([root.val])
+        else:
+            res[level].append(root.val)
+
+        res = self.level_order_helper(root.left, res, level + 1)
+        return self.level_order_helper(root.right, res, level + 1)
 
 
 if __name__ == '__main__':

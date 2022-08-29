@@ -1,7 +1,8 @@
 import unittest
 from typing import List, Optional
 from leetcode import Solution
-import ListNode as ln
+import ListNode as Ln
+import Nodes as N
 
 sol = Solution()
 
@@ -38,55 +39,55 @@ class TestLeetCode(unittest.TestCase):
         self.assertEqual(False, sol.isSubsequence('aabc', 'asbcda'))
         self.assertEqual(True, sol.isSubsequence('aabc', 'asbcdabca'))
 
-    def _assertEqualLinkedList(self, list1: List[int], list2: Optional[ln.ListNode], limit=-1):
-        list2_ = ln.to_list(list2, limit)
+    def _assertEqualLinkedList(self, list1: List[int], list2: Optional[Ln.ListNode], limit=-1):
+        list2_ = Ln.to_list(list2, limit)
         self.assertEqual(list1, list2_)
 
     def test_merge_two_lists(self):
         self._assertEqualLinkedList([], sol.mergeTwoLists(None, None))
-        self._assertEqualLinkedList([1, 2], sol.mergeTwoLists(None, ln.from_list([1, 2])))
-        self._assertEqualLinkedList([1, 2], sol.mergeTwoLists(ln.from_list([1, 2]), None))
+        self._assertEqualLinkedList([1, 2], sol.mergeTwoLists(None, Ln.from_list([1, 2])))
+        self._assertEqualLinkedList([1, 2], sol.mergeTwoLists(Ln.from_list([1, 2]), None))
         self._assertEqualLinkedList(
             [1, 1, 2, 2],
             sol.mergeTwoLists(
-                ln.from_list([1, 2]),
-                ln.from_list([1, 2]))
+                Ln.from_list([1, 2]),
+                Ln.from_list([1, 2]))
         )
         self._assertEqualLinkedList(
             [1, 1, 1, 2, 2, 3, 5, 5, 6, 9],
             sol.mergeTwoLists(
-                ln.from_list([1, 1, 2, 5, 6, 9]),
-                ln.from_list([1, 2, 3, 5]))
+                Ln.from_list([1, 1, 2, 5, 6, 9]),
+                Ln.from_list([1, 2, 3, 5]))
         )
         self._assertEqualLinkedList(
             [-1, 0, 0, 1, 2, 4],
             sol.mergeTwoLists(
-                ln.from_list([1, 2]),
-                ln.from_list([-1, 0, 0, 4]))
+                Ln.from_list([1, 2]),
+                Ln.from_list([-1, 0, 0, 4]))
         )
 
     def test_reverse_list(self):
         self._assertEqualLinkedList([], sol.reverseList(None))
-        self._assertEqualLinkedList([1], sol.reverseList(ln.from_list([1])))
-        self._assertEqualLinkedList([1, 1], sol.reverseList(ln.from_list([1, 1])))
-        self._assertEqualLinkedList([3, 2, 1], sol.reverseList(ln.from_list([1, 2, 3])))
+        self._assertEqualLinkedList([1], sol.reverseList(Ln.from_list([1])))
+        self._assertEqualLinkedList([1, 1], sol.reverseList(Ln.from_list([1, 1])))
+        self._assertEqualLinkedList([3, 2, 1], sol.reverseList(Ln.from_list([1, 2, 3])))
 
     def test_middle_node(self):
         self._assertEqualLinkedList([], sol.middleNode(None))
-        self._assertEqualLinkedList([1], sol.middleNode(ln.from_list([1])))
-        self._assertEqualLinkedList([2], sol.middleNode(ln.from_list([1, 2])))
-        self._assertEqualLinkedList([2, 3], sol.middleNode(ln.from_list([1, 2, 3])))
-        self._assertEqualLinkedList([4, 5, 6], sol.middleNode(ln.from_list([1, 2, 3, 4, 5, 6])))
+        self._assertEqualLinkedList([1], sol.middleNode(Ln.from_list([1])))
+        self._assertEqualLinkedList([2], sol.middleNode(Ln.from_list([1, 2])))
+        self._assertEqualLinkedList([2, 3], sol.middleNode(Ln.from_list([1, 2, 3])))
+        self._assertEqualLinkedList([4, 5, 6], sol.middleNode(Ln.from_list([1, 2, 3, 4, 5, 6])))
 
     def test_detect_cycle(self):
         self._assertEqualLinkedList([], sol.detectCycle(None))
-        self._assertEqualLinkedList([], sol.detectCycle(ln.from_list_and_tail_pointer([1], -1)), 1)
-        self._assertEqualLinkedList([1], sol.detectCycle(ln.from_list_and_tail_pointer([1], 0)), 1)
-        self._assertEqualLinkedList([], sol.detectCycle(ln.from_list_and_tail_pointer([1, 1, 1], -1)))
-        self._assertEqualLinkedList([1, 1], sol.detectCycle(ln.from_list_and_tail_pointer([1, 1, 1], 1)), 2)
-        self._assertEqualLinkedList([3], sol.detectCycle(ln.from_list_and_tail_pointer([-1, 0, 5, 3], 3)), 1)
-        self._assertEqualLinkedList([-1, 0, 5, 3], sol.detectCycle(ln.from_list_and_tail_pointer([-1, 0, 5, 3], 0)), 4)
-        self._assertEqualLinkedList([5, 3], sol.detectCycle(ln.from_list_and_tail_pointer([-1, 0, 5, 3], 2)), 2)
+        self._assertEqualLinkedList([], sol.detectCycle(Ln.from_list_and_tail_pointer([1], -1)), 1)
+        self._assertEqualLinkedList([1], sol.detectCycle(Ln.from_list_and_tail_pointer([1], 0)), 1)
+        self._assertEqualLinkedList([], sol.detectCycle(Ln.from_list_and_tail_pointer([1, 1, 1], -1)))
+        self._assertEqualLinkedList([1, 1], sol.detectCycle(Ln.from_list_and_tail_pointer([1, 1, 1], 1)), 2)
+        self._assertEqualLinkedList([3], sol.detectCycle(Ln.from_list_and_tail_pointer([-1, 0, 5, 3], 3)), 1)
+        self._assertEqualLinkedList([-1, 0, 5, 3], sol.detectCycle(Ln.from_list_and_tail_pointer([-1, 0, 5, 3], 0)), 4)
+        self._assertEqualLinkedList([5, 3], sol.detectCycle(Ln.from_list_and_tail_pointer([-1, 0, 5, 3], 2)), 2)
 
     def test_max_profit(self):
         self.assertEqual(0, sol.maxProfit([]))
@@ -102,6 +103,16 @@ class TestLeetCode(unittest.TestCase):
         self.assertEqual(1, sol.longestPalindrome('aA'))
         self.assertEqual(8, sol.longestPalindrome('abcdabcd'))
         self.assertEqual(9, sol.longestPalindrome('abcdeabcd'))
+
+    def test_level_order(self):
+        self.assertEqual([], sol.levelOrder(N.tnodes_from_array([])))
+        self.assertEqual([[1]], sol.levelOrder(N.tnodes_from_array([[1]])))
+        self.assertEqual([[0], [1, 2], [3, 4, 5, 6]],
+                         sol.levelOrder(N.tnodes_from_array([[0], [1, 2], [3, 4], [5, 6]])))
+        self.assertEqual([[0], [1, 2], [3, 4, 5, 6]],
+                         sol.levelOrder(N.tnodes_from_array([[0], [1, 2], [3, 4], [5, 6]])))
+        self.assertEqual([[0], [1], [3, 4], [7]],
+                         sol.levelOrder(N.tnodes_from_array([[0], [1, None], [3, 4], [None, None], [None, 7]])))
 
 
 if __name__ == '__main__':
