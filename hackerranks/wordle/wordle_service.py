@@ -257,8 +257,10 @@ def user_actions(words, ignored, correct_, close_, wrong_):
             correct_, close_, wrong_ = _action_update_hints()
         elif user_input.lower() in {'n', 'next'}:
             return False, ignored, correct_, close_, wrong_
-        else:  # Quit scenario -> Empty return
+        elif user_input.lower() in {'q', 'quit'}:
             return True, {}, [], [], ''
+        else:  # Unrecognized input
+            print('Command not recognized. Valid options are: R, U, N, and Q.')
 
 
 def _action_remove_words(words):
