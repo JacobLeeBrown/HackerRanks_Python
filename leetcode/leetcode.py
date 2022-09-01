@@ -13,6 +13,9 @@ my_map2 = {'a': [0, 1, 2], 'c': [2, 1, 0], 'b': [1, 2, 3]}
 
 class Solution:
 
+    def __init__(self):
+        self.first_bad_version = 0  # 278 element
+
     def runningSum(self, nums: List[int]) -> List[int]:
         # 1480
         running_sum = 0
@@ -212,6 +215,53 @@ class Solution:
 
         res = self.level_order_helper(root.left, res, level + 1)
         return self.level_order_helper(root.right, res, level + 1)
+
+    def binary_search(self, nums: List[int], target: int) -> int:
+        # 704
+        # Super slow (only beats 5%), but space efficient (better than 73%)
+        # TODO: Speed up
+        return self.binary_search_helper(nums, target, 0)
+
+    def binary_search_helper(self, nums: List[int], target: int, start_idx: int) -> int:
+        nums_len = len(nums)
+        if nums_len == 0:
+            return -1
+        elif nums_len == 1:
+            if nums[0] == target:
+                return start_idx
+            else:
+                return -1
+
+        mid_idx = int(nums_len/2)
+        mid_val = nums[mid_idx]
+        if target == mid_val:
+            return start_idx+mid_idx
+        elif target > mid_val:
+            return self.binary_search_helper(nums[mid_idx+1:], target, start_idx+mid_idx+1)
+        else:
+            return self.binary_search_helper(nums[:mid_idx], target, start_idx)
+
+    def firstBadVersion(self, n: int) -> int:
+        # 278
+        return self.first_bad_version_helper(1, n)
+
+    def first_bad_version_helper(self, start: int, end: int) -> int:
+        # 278 helper
+        if start == end:
+            return start
+        mid_version = start + int((end-start)/2)
+        if self.isBadVersion(mid_version):
+            return self.first_bad_version_helper(start, mid_version)
+        else:
+            return self.first_bad_version_helper(mid_version+1, end)
+
+    def isBadVersion(self, n: int) -> bool:
+        # 278 element
+        return n >= self.first_bad_version
+
+    def set_first_bad_version(self, n: int) -> None:
+        # 278 element
+        self.first_bad_version = n
 
 
 if __name__ == '__main__':
