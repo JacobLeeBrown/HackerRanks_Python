@@ -137,6 +137,15 @@ class TestLeetCode(unittest.TestCase):
         self.assertEqual(4, sol.firstBadVersion(8))
         self.assertEqual(4, sol.firstBadVersion(128))
 
+    def test_is_valid_bst(self):
+        self.assertEqual(True, sol.isValidBST(N.tnodes_from_array([])))
+        self.assertEqual(True, sol.isValidBST(N.tnodes_from_array([[1]])))
+        self.assertEqual(False, sol.isValidBST(N.tnodes_from_array([[0], [1, 2], [3, 4], [5, 6]])))
+        self.assertEqual(True, sol.isValidBST(N.tnodes_from_array([[0], [-5, 5], [-6, -4], [4, 6]])))
+        self.assertEqual(True, sol.isValidBST(N.tnodes_from_array([[0], [None, 5], [None, None], [None, 6]])))
+        self.assertEqual(True, sol.isValidBST(N.tnodes_from_array([[0], [-5, None], [-6, None], [None, None]])))
+        self.assertEqual(False, sol.isValidBST(N.tnodes_from_array([[0], [-5, None], [-6, 1], [None, None]])))
+
 
 if __name__ == '__main__':
     unittest.main()
