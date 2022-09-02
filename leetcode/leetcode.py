@@ -263,6 +263,21 @@ class Solution:
         # 278 element
         self.first_bad_version = n
 
+    def isValidBST(self, root: Optional[TreeNode]) -> bool:
+        # 98
+        return self.is_valid_bst_helper(root, None, None)
+
+    def is_valid_bst_helper(self, root: Optional[TreeNode], min_val: Optional[int], max_val: Optional[int]) -> bool:
+        # 98 helper
+        if root is None:
+            return True
+        elif (min_val is not None and root.val <= min_val) \
+                or (max_val is not None and root.val >= max_val):
+            return False
+        else:
+            return self.is_valid_bst_helper(root.left, min_val, root.val) \
+                   and self.is_valid_bst_helper(root.right, root.val, max_val)
+
 
 if __name__ == '__main__':
     sol = Solution()
