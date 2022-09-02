@@ -114,6 +114,29 @@ class TestLeetCode(unittest.TestCase):
         self.assertEqual([[0], [1], [3, 4], [7]],
                          sol.levelOrder(N.tnodes_from_array([[0], [1, None], [3, 4], [None, None], [None, 7]])))
 
+    def test_binary_search(self):
+        self.assertEqual(-1, sol.binary_search([], 5))
+        self.assertEqual(0, sol.binary_search([5], 5))
+        self.assertEqual(2, sol.binary_search([-5, -3, 0, 2, 4], 0))
+        self.assertEqual(2, sol.binary_search([0, 1, 2, 3, 4], 2))
+        self.assertEqual(1, sol.binary_search([0, 1, 2, 3, 4], 1))
+        self.assertEqual(0, sol.binary_search([0, 1, 2, 3, 4], 0))
+        self.assertEqual(3, sol.binary_search([0, 1, 2, 3, 4], 3))
+        self.assertEqual(-1, sol.binary_search([0, 1, 2, 3], -5))
+        self.assertEqual(-1, sol.binary_search([0, 1, 2, 3], 5))
+        self.assertEqual(4, sol.binary_search([-1, 0, 3, 5, 9, 12], 9))
+
+    def test_first_bad_version(self):
+        sol.set_first_bad_version(1)
+        self.assertEqual(1, sol.firstBadVersion(1))
+        self.assertEqual(1, sol.firstBadVersion(2))
+        self.assertEqual(1, sol.firstBadVersion(4))
+
+        sol.set_first_bad_version(4)
+        self.assertEqual(4, sol.firstBadVersion(4))
+        self.assertEqual(4, sol.firstBadVersion(8))
+        self.assertEqual(4, sol.firstBadVersion(128))
+
 
 if __name__ == '__main__':
     unittest.main()
