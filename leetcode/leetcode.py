@@ -278,6 +278,55 @@ class Solution:
             return self.is_valid_bst_helper(root.left, min_val, root.val) \
                    and self.is_valid_bst_helper(root.right, root.val, max_val)
 
+    def lowestCommonAncestor(self, root: TreeNode, p: TreeNode, q: TreeNode) -> TreeNode:
+        # 235
+        # Tree is a Binary Search Tree
+        # The number of nodes in the tree is in the range [2, 10^5].
+        # -10^9 <= Node.val <= 10^9
+        # All Node.val are unique.
+        # p != q
+        # p and q will exist in the BST.
+        p_val = p.val
+        q_val = q.val
+        if p_val < q_val:
+            return self.lowest_common_ancestor_helper(root, p_val, q_val)
+        else:
+            return self.lowest_common_ancestor_helper(root, q_val, p_val)
+
+    def lowest_common_ancestor_helper(self, root: TreeNode, p_val: int, q_val: int) -> TreeNode:
+        # 235 helper
+        # Assumes p_val < q_val
+        cur_val = root.val
+        if cur_val == p_val or cur_val == q_val or (p_val < cur_val < q_val):
+            return root
+        elif cur_val < p_val:
+            return self.lowest_common_ancestor_helper(root.right, p_val, q_val)
+        else:  # cur_val > q_val
+            return self.lowest_common_ancestor_helper(root.left, p_val, q_val)
+
+    def floodFill(self, image: List[List[int]], sr: int, sc: int, color: int) -> List[List[int]]:
+        # 733
+        if image[sr][sc] == color:
+            return image
+        m = len(image)
+        n = len(image[0])
+        visited = [[False for _ in range(n)] for _ in range(m)]
+        self.flood_fill_helper(image, visited, m, n, image[sr][sc], color, sr, sc)
+        return image
+
+    def flood_fill_helper(self, image: List[List[int]], visited: List[List[bool]],
+                          m: int, n: int, old_color: int, new_color: int, r: int, c: int) -> None:
+        # 733 helper
+        if m <= r or r < 0 or n <= c or c < 0 or visited[r][c] or image[r][c] != old_color:
+            return
+
+        visited[r][c] = True
+        image[r][c] = new_color
+        self.flood_fill_helper(image, visited, m, n, old_color, new_color, r, c+1)
+        self.flood_fill_helper(image, visited, m, n, old_color, new_color, r, c-1)
+        self.flood_fill_helper(image, visited, m, n, old_color, new_color, r+1, c)
+        self.flood_fill_helper(image, visited, m, n, old_color, new_color, r-1, c)
+
 
 if __name__ == '__main__':
     sol = Solution()
