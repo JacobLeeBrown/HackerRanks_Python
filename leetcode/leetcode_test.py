@@ -146,6 +146,34 @@ class TestLeetCode(unittest.TestCase):
         self.assertEqual(True, sol.isValidBST(N.tnodes_from_array([[0], [-5, None], [-6, None], [None, None]])))
         self.assertEqual(False, sol.isValidBST(N.tnodes_from_array([[0], [-5, None], [-6, 1], [None, None]])))
 
+    def test_lowest_common_ancestor_helper(self):
+        self.assertEqual(1, sol.lowest_common_ancestor_helper(
+            N.tnodes_from_array([[1], [None, 3]]), 1, 3).val)
+        self.assertEqual(0, sol.lowest_common_ancestor_helper(
+            N.tnodes_from_array([[0], [-5, 3]]), -5, 3).val)
+        self.assertEqual(5, sol.lowest_common_ancestor_helper(
+            N.tnodes_from_array([[0], [-5, 5], [-7, -3], [3, 7]]), 3, 7).val)
+        self.assertEqual(0, sol.lowest_common_ancestor_helper(
+            N.tnodes_from_array([[0], [-5, 5], [-7, -3], [3, 7]]), -5, 3).val)
+        self.assertEqual(0, sol.lowest_common_ancestor_helper(
+            N.tnodes_from_array([[0], [-5, 5], [-7, -3], [3, 7]]), 0, -7).val)
+        self.assertEqual(-5, sol.lowest_common_ancestor_helper(
+            N.tnodes_from_array([[0], [-5, 5], [-7, -3], [3, 7]]), -5, -3).val)
+
+    def test_flood_fill(self):
+        image = [[1, 1, 1], [1, 0, 1], [1, 1, 1]]
+        expec = [[1, 1, 1], [1, 0, 1], [1, 1, 1]]
+        self.assertEqual(expec, sol.floodFill(image, 1, 1, 0))
+        image = [[1, 1, 1], [1, 0, 1], [1, 1, 1]]
+        expec = [[1, 1, 1], [1, 1, 1], [1, 1, 1]]
+        self.assertEqual(expec, sol.floodFill(image, 1, 1, 1))
+        image = [[1, 1, 1], [1, 1, 0], [1, 0, 1]]
+        expec = [[2, 2, 2], [2, 2, 0], [2, 0, 1]]
+        self.assertEqual(expec, sol.floodFill(image, 2, 0, 2))
+        image = [[1, 1, 1], [1, 1, 0], [1, 0, 1], [1, 0, 1]]
+        expec = [[1, 1, 1], [1, 1, 0], [1, 2, 1], [1, 2, 1]]
+        self.assertEqual(expec, sol.floodFill(image, 2, 1, 2))
+
 
 if __name__ == '__main__':
     unittest.main()
