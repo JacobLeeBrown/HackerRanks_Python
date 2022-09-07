@@ -15,6 +15,7 @@ class Solution:
 
     def __init__(self):
         self.first_bad_version = 0  # 278 element
+        self.fib_nums = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89]  # 509 element
 
     def runningSum(self, nums: List[int]) -> List[int]:
         # 1480
@@ -326,6 +327,44 @@ class Solution:
         self.flood_fill_helper(image, visited, m, n, old_color, new_color, r, c-1)
         self.flood_fill_helper(image, visited, m, n, old_color, new_color, r+1, c)
         self.flood_fill_helper(image, visited, m, n, old_color, new_color, r-1, c)
+
+    def numIslands(self, grid: List[List[str]]) -> int:
+        # 200
+        # Super slow (only beats 5%), but space efficient (better than 82%)
+        m = len(grid)
+        n = len(grid[0])
+        visited = [[False for _ in range(n)] for _ in range(m)]
+        island_count = 0
+        for row in range(m):
+            for col in range(n):
+                if not visited[row][col] and grid[row][col] == '1':
+                    island_count += 1
+                    self.num_islands_helper(grid, visited, m, n, row, col)
+        return island_count
+
+    def num_islands_helper(self, grid: List[List[str]], visited: List[List[bool]],
+                           m: int, n: int, row: int, col: int):
+        # 200 helper
+        # Will mark all spaces of an island as visited
+        if row < 0 or col < 0 or row >= m or col >= n or visited[row][col] or grid[row][col] == '0':
+            return
+
+        visited[row][col] = True
+        self.num_islands_helper(grid, visited, m, n, row+1, col)
+        self.num_islands_helper(grid, visited, m, n, row-1, col)
+        self.num_islands_helper(grid, visited, m, n, row, col+1)
+        self.num_islands_helper(grid, visited, m, n, row, col-1)
+
+    def fib(self, n: int) -> int:
+        # 509
+        fib_limit = len(self.fib_nums)
+        while fib_limit <= n:
+            fn_2 = self.fib_nums[fib_limit-2]
+            fn_1 = self.fib_nums[fib_limit-1]
+            self.fib_nums.append(fn_2 + fn_1)
+            fib_limit += 1
+        return self.fib_nums[n]
+
 
 
 if __name__ == '__main__':

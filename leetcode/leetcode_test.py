@@ -174,6 +174,31 @@ class TestLeetCode(unittest.TestCase):
         expec = [[1, 1, 1], [1, 1, 0], [1, 2, 1], [1, 2, 1]]
         self.assertEqual(expec, sol.floodFill(image, 2, 1, 2))
 
+    def test_num_islands(self):
+        islands = [
+            ['1', '1', '1'],
+            ['1', '1', '1'],
+            ['1', '1', '1']
+        ]
+        self.assertEqual(1, sol.numIslands(islands))
+        islands = [
+            ['0', '0', '0'],
+            ['0', '0', '0'],
+            ['0', '0', '0']
+        ]
+        self.assertEqual(0, sol.numIslands(islands))
+        islands = [
+            ['1', '1', '1'],
+            ['1', '0', '1'],
+            ['1', '1', '1']
+        ]
+        self.assertEqual(1, sol.numIslands(islands))
+        islands = [
+            ['1', '0', '1'],
+            ['0', '0', '0'],
+            ['1', '0', '1']
+        ]
+        self.assertEqual(4, sol.numIslands(islands))
 
 if __name__ == '__main__':
     unittest.main()
