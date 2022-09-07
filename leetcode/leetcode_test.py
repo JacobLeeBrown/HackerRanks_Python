@@ -200,5 +200,12 @@ class TestLeetCode(unittest.TestCase):
         ]
         self.assertEqual(4, sol.numIslands(islands))
 
+    def test_fib(self):
+        self.assertEqual(0, sol.fib(0))
+        self.assertEqual(1, sol.fib(1))
+        self.assertEqual(1, sol.fib(2))
+        self.assertEqual(89, sol.fib(11))
+        self.assertEqual(4181, sol.fib(19))
+
 if __name__ == '__main__':
     unittest.main()
