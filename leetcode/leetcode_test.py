@@ -207,5 +207,17 @@ class TestLeetCode(unittest.TestCase):
         self.assertEqual(89, sol.fib(11))
         self.assertEqual(4181, sol.fib(19))
 
+    def test_climb_stairs(self):
+        self._test_climb_stairs(sol.climbStairs)
+        self._test_climb_stairs(sol.climbStairs_alt1)
+        self._test_climb_stairs(sol.climbStairs_alt2)
+
+    def _test_climb_stairs(self, climb_stairs_method):
+        self.assertEqual(0, climb_stairs_method(0))
+        self.assertEqual(1, climb_stairs_method(1))
+        self.assertEqual(2, climb_stairs_method(2))
+        self.assertEqual(89, climb_stairs_method(10))
+        self.assertEqual(4181, climb_stairs_method(18))
+
 if __name__ == '__main__':
     unittest.main()

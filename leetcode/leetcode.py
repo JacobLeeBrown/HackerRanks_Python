@@ -16,6 +16,7 @@ class Solution:
     def __init__(self):
         self.first_bad_version = 0  # 278 element
         self.fib_nums = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89]  # 509 element
+        self.steps_nums = [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89]  # 70 element
 
     def runningSum(self, nums: List[int]) -> List[int]:
         # 1480
@@ -365,6 +366,40 @@ class Solution:
             fib_limit += 1
         return self.fib_nums[n]
 
+    def climbStairs(self, n: int) -> int:
+        # 70 original
+        # Only faster than 10%, less memory than 57%
+        steps_limit = len(self.steps_nums)
+        while steps_limit <= n:
+            fn_2 = self.steps_nums[steps_limit-2]
+            fn_1 = self.steps_nums[steps_limit-1]
+            self.steps_nums.append(fn_2 + fn_1)
+            steps_limit += 1
+        return self.steps_nums[n]
+
+    def climbStairs_alt1(self, n: int) -> int:
+        # 70 alternate 1
+        # Faster than 90%, only less memory than 12%
+        steps_nums = [0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144,
+                      233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946,
+                      17711, 28657, 46368, 75025, 121393, 196418, 317811,
+                      514229, 832040, 1346269, 2178309, 3524578, 5702887,
+                      9227465, 14930352, 24157817, 39088169, 63245986,
+                      102334155, 165580141, 267914296, 433494437,
+                      701408733, 1134903170, 1836311903, 2971215073]
+        return steps_nums[n]
+
+    def climbStairs_alt2(self, n: int) -> int:
+        # 70 alternate 2
+        # Faster than 99%, less memory usage than 57%! Best of the 3 versions
+        steps_nums = [0, 1, 2]
+        steps_limit = len(steps_nums)
+        while steps_limit <= n:
+            fn_2 = steps_nums[steps_limit-2]
+            fn_1 = steps_nums[steps_limit-1]
+            steps_nums.append(fn_2 + fn_1)
+            steps_limit += 1
+        return steps_nums[n]
 
 
 if __name__ == '__main__':
