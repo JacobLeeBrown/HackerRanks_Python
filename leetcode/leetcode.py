@@ -401,6 +401,21 @@ class Solution:
             steps_limit += 1
         return steps_nums[n]
 
+    def minCostClimbingStairs(self, cost: List[int]) -> int:
+        # 746
+        # Took a while to reason through, but faster than 98% and less memory than 74%!!!
+        if len(cost) < 2:
+            return 0
+        mins = [cost[0], cost[1]]
+        costs = len(cost)
+        for i in range(2, costs):
+            min2 = mins[i-2]
+            min1 = mins[i-1]
+            best_min = min1 if min1 <= min2 else min2
+            cur_min = cost[i] + best_min
+            mins.append(cur_min)
+        return mins[costs-2] if mins[costs-2] <= mins[costs-1] else mins[costs-1]
+
 
 if __name__ == '__main__':
     sol = Solution()

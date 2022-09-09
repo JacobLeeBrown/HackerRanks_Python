@@ -219,5 +219,15 @@ class TestLeetCode(unittest.TestCase):
         self.assertEqual(89, climb_stairs_method(10))
         self.assertEqual(4181, climb_stairs_method(18))
 
+    def test_min_cost_climbing_stairs(self):
+        self.assertEqual(0, sol.minCostClimbingStairs([]))
+        self.assertEqual(0, sol.minCostClimbingStairs([20]))
+        self.assertEqual(10, sol.minCostClimbingStairs([10, 20]))
+        self.assertEqual(5, sol.minCostClimbingStairs([10, 5]))
+        self.assertEqual(5, sol.minCostClimbingStairs([10, 5, 12]))
+        self.assertEqual(17, sol.minCostClimbingStairs([10, 5, 12, 20]))
+        self.assertEqual(22, sol.minCostClimbingStairs([10, 15, 12, 20]))
+
+
 if __name__ == '__main__':
     unittest.main()
