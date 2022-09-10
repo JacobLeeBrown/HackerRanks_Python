@@ -228,6 +228,17 @@ class TestLeetCode(unittest.TestCase):
         self.assertEqual(17, sol.minCostClimbingStairs([10, 5, 12, 20]))
         self.assertEqual(22, sol.minCostClimbingStairs([10, 15, 12, 20]))
 
+    def test_unique_paths(self):
+        self.assertEqual(0, sol.uniquePaths(0, 0))
+        self.assertEqual(0, sol.uniquePaths(0, 6))
+        self.assertEqual(0, sol.uniquePaths(4, 0))
+        self.assertEqual(1, sol.uniquePaths(1, 1))
+        self.assertEqual(1, sol.uniquePaths(1, 6))
+        self.assertEqual(1, sol.uniquePaths(4, 1))
+        self.assertEqual(10, sol.uniquePaths(3, 4))
+        self.assertEqual(10, sol.uniquePaths(4, 3))
+        self.assertEqual(70, sol.uniquePaths(5, 5))
+
 
 if __name__ == '__main__':
     unittest.main()

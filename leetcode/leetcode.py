@@ -416,6 +416,28 @@ class Solution:
             mins.append(cur_min)
         return mins[costs-2] if mins[costs-2] <= mins[costs-1] else mins[costs-1]
 
+    def uniquePaths(self, m: int, n: int) -> int:
+        # 62
+        # Solution grid is:
+        # 1  1  1  1  1  ...
+        # 1  2  3  4  5  ...
+        # 1  3  6  10 15 ...
+        # 1  4  10 20 35 ...
+        # 1  5  15 35 70 ...
+        # Only faster than 15%, less memory than 75%
+
+        if m < 1 or n < 1:
+            return 0
+        sol_grid = [[1 for _ in range(n)] for _ in range(m)]
+        for i in range(1, m):
+            for j in range(1, n):
+                sol_grid[i][j] = sol_grid[i-1][j] + sol_grid[i][j-1]
+        return sol_grid[m-1][n-1]
+
+    def findAnagrams(self, s: str, p: str) -> List[int]:
+        # 438
+        # TODO: I don't wanna think through this right now, will do later
+        return [0]
 
 if __name__ == '__main__':
     sol = Solution()
