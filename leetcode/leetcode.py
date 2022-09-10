@@ -439,5 +439,6 @@ class Solution:
         # TODO: I don't wanna think through this right now, will do later
         return [0]
 
+
 if __name__ == '__main__':
     sol = Solution()
