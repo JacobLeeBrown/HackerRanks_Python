@@ -436,8 +436,73 @@ class Solution:
 
     def findAnagrams(self, s: str, p: str) -> List[int]:
         # 438
-        # TODO: I don't wanna think through this right now, will do later
-        return [0]
+        # Example
+        #   Input: s = "cbaebabacd", p = "abc"
+        #   Output: [0,6]
+        # Only faster than 16%, and only less memory than 6%
+        # TODO: Improve significantly
+
+        p_len = len(p)
+        p_map = {}
+        for p_char in p:
+            if p_char not in p_map:
+                p_map[p_char] = 1
+            else:
+                p_map[p_char] += 1
+
+        window_start = -1  # -1 means no current moving window
+        cur_idx = 0
+        s_idx_map = {}
+        res = []
+        for s_char in s:
+            if s_char in p_map:
+                # If s_char in p and we haven't started a moving window, start one
+                if window_start == -1:
+                    window_start = cur_idx
+
+                if s_char not in s_idx_map:
+                    # s_char not yet tracked -> add to map
+                    s_idx_map[s_char] = [cur_idx]
+                else:
+                    # s_char tracked
+                    s_char_indices = s_idx_map[s_char]
+                    # Remove any tracked indices that have fallen behind window_start
+                    clean_idx = 0
+                    for s_char_index in s_char_indices:
+                        if s_char_index < window_start:
+                            clean_idx += 1
+                        else:
+                            break
+                    if clean_idx == len(s_char_indices):
+                        s_char_indices = []
+                    else:
+                        s_char_indices = s_char_indices[clean_idx:]
+
+                    # Append current index to list
+                    s_char_indices.append(cur_idx)
+
+                    # If the number of indices surpasses the amount the char appears in p
+                    if len(s_char_indices) > p_map[s_char]:
+                        # Update moving window index after earliest occurrence
+                        window_start = s_char_indices[0] + 1
+                        # Dequeue the earliest occurrence
+                        s_char_indices = s_char_indices[1:]  # Dequeue
+
+                    # Update s_idx_map
+                    s_idx_map[s_char] = s_char_indices
+
+                # If the length of our moving window equals the length of p, we have an Anagram!
+                if cur_idx - window_start == p_len - 1:
+                    res.append(window_start)
+                    window_start += 1
+            else:
+                # If s_char is not in p, then we start over!
+                s_idx_map.clear()
+                window_start = -1
+
+            cur_idx += 1
+
+        return res
 
 
 if __name__ == '__main__':
