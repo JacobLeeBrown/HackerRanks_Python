@@ -504,6 +504,33 @@ class Solution:
 
         return res
 
+    def characterReplacement(self, s: str, k: int) -> int:
+        # 424
+        # Example:
+        #   Input: s = "AABABBA", k = 1
+        #   Output: 4 (replace 'A' at idx 3 with 'B')
+        # Naive implementation
+        # Also misguided -> Only looks forward in s, not back. Needs to be revised.
+        res = 0
+        prev_char = ''
+        s_len = len(s)
+        for i in range(s_len):
+            s_char = s[i]
+            if s_char != prev_char:
+                prev_char = s_char
+                running_count = 1
+                k_counter = 0
+                while k_counter <= k and (i + running_count) < s_len:
+                    next_char = s[i + running_count]
+                    if next_char != s_char:
+                        k_counter += 1
+                        if k_counter > k:
+                            break
+                    running_count += 1
+                if running_count > res:
+                    res = running_count
+        return res
+
 
 if __name__ == '__main__':
     sol = Solution()
