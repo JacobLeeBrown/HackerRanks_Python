@@ -239,6 +239,25 @@ class TestLeetCode(unittest.TestCase):
         self.assertEqual(10, sol.uniquePaths(4, 3))
         self.assertEqual(70, sol.uniquePaths(5, 5))
 
+    def test_find_anagrams(self):
+        self.assertEqual([], sol.findAnagrams('a', 'b'))
+        self.assertEqual([0], sol.findAnagrams('a', 'a'))
+        self.assertEqual([0, 2], sol.findAnagrams('abcba', 'abc'))
+        self.assertEqual([3], sol.findAnagrams('abdcba', 'abc'))
+        self.assertEqual([0], sol.findAnagrams('abcdba', 'abc'))
+        self.assertEqual([0, 1, 2, 3], sol.findAnagrams('abcabc', 'abc'))
+        self.assertEqual([1, 2, 3, 5], sol.findAnagrams('abacbabc', 'abc'))
+
+    def test_character_replacement(self):
+        self.assertEqual(1, sol.characterReplacement('A', 0))
+        self.assertEqual(1, sol.characterReplacement('A', 1))
+        self.assertEqual(1, sol.characterReplacement('A', 2))
+        self.assertEqual(2, sol.characterReplacement('AA', 1))
+        self.assertEqual(2, sol.characterReplacement('AB', 1))
+        self.assertEqual(4, sol.characterReplacement('AABABBA', 1))
+        self.assertEqual(2, sol.characterReplacement('ABAA', 0))
+        self.assertEqual(4, sol.characterReplacement('ABBB', 2))
+
 
 if __name__ == '__main__':
     unittest.main()
