@@ -91,7 +91,7 @@ def _fill_dict(d, key_set=string.ascii_uppercase):
 
 
 def find_best_words(words, letter_count, letter_index_count, n=10, should_print=False):
-    """ Determines best entries from `words` based on scoring system, using
+    """ Determines the best entries from `words` based on scoring system, using
     statistics from `letter_count` and `letter_index_count`.
 
     Parameters
