@@ -27,5 +27,14 @@ if __name__ == "__main__":
         sign_in_button.click()
 
     # Now signed-in
+    # Select first available survey
+    first_survey_button = driver.find_element(By.XPATH, "//ul[@class='widget-offers-list']//a[1]")
+
+    while 'e-Rewards' in driver.title:
+        # Pre-qualification questions
+        question_text_elem = driver.find_element(By.CLASS_NAME, 'questionText')
+        question_text = question_text_elem.text
+
+
 
     print('End of auto_survey')
