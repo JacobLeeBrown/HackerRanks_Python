@@ -58,6 +58,10 @@ class Maze(object):
     def generate_maze(self):
         new_grid = [[0 for _ in range(self.width)] for _ in range(self.height)]
         traversed = [[False for _ in range(self.width)] for _ in range(self.height)]
+        # Will need another 2d array to track "turns" -> Will only want at most 3 exits per turn position
+        # Will need to direct original path from start to end,
+        #   then make branching paths off of that path that terminate
+        # Need to determine how best to "fill in" total space of maze
 
 
 
