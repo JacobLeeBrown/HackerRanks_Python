@@ -6,7 +6,7 @@ import requests
 import json
 from datetime import date
 import time
-import hackerranks.time_util as t
+import util.time_util as t
 import urllib.parse as urlp
 
 START_OF_2016 = 1451606400  # Jan. 1st, 2016 @ 00:00:00 GMT
