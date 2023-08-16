@@ -2,7 +2,7 @@ class Maze(object):
 
     def __init__(self, width_=10, height_=10,
                  start_x_=0, start_y_=0,
-                 end_x_=0, end_y_=0):
+                 end_x_=10, end_y_=10):
         """
         Parameters
         ----------
