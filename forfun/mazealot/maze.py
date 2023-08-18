@@ -63,8 +63,6 @@ class Maze(object):
         #       don't connect just need to connect to ones that do.
         pass
 
-    def print_maze(self:
-
 
 
 
