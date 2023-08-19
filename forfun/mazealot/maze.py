@@ -4,7 +4,7 @@ class Maze(object):
 
     def __init__(self, width_=10, height_=10,
                  start_x_=0, start_y_=0,
-                 end_x_=10, end_y_=10):
+                 end_x_=9, end_y_=9):
         """
         Parameters
         ----------
@@ -42,13 +42,13 @@ class Maze(object):
         assert (self.height > 0), f'Height ({self.height}) is not positive!'
 
         # Verify starting position is along the edge of the maze
-        if (self.start_x not in (0, self.width) and
-                self.start_y not in (0, self.height)):
+        if (self.start_x not in (0, self.width-1) and
+                self.start_y not in (0, self.height-1)):
             assert False, f'Starting position ({self.start_x}, {self.start_y}) not on edge!'
 
         # Verify ending position is along the edge of the maze
-        if (self.end_x not in (0, self.width) and
-                self.end_y not in (0, self.height)):
+        if (self.end_x not in (0, self.width-1) and
+                self.end_y not in (0, self.height-1)):
             assert False, f'Ending position ({self.end_x}, {self.end_y}) not on edge!'
 
         # Verify ending position is not too close to starting position
@@ -81,12 +81,16 @@ class Maze(object):
         return printable_grid
 
     def print_grid(self):
+        for row in self.grid:
+            print(row)
+
+    def print_maze(self, open=' ', wall='#'):
         printable_grid = self._convert_grid()
         width = len(printable_grid[0])
         print(''.join('#' for _ in range(width + 2)))
         for row in printable_grid:
             print('#', end='')
             for elem in row:
-                print(str(elem), end='')
+                print(open if elem == 0 else wall, end='')
             print('#')
         print(''.join('#' for _ in range(width + 2)))

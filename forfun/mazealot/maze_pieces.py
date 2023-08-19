@@ -113,8 +113,9 @@ def get_random_piece(p):
     rand = random.random() * p_sum
     running_sum = 0
     for i, p_ in enumerate(p):
-        if (running_sum + p_) < rand:
+        if (running_sum + p_) > rand:
             return i
+        running_sum += p_
     # Should always return by now, but, just in case:
     return random.randint(0, PIECE_COUNT - 1)
 
