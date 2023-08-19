@@ -1,3 +1,5 @@
+import maze_pieces as mp
+
 class Maze(object):
 
     def __init__(self, width_=10, height_=10,
@@ -63,7 +65,28 @@ class Maze(object):
         #       don't connect just need to connect to ones that do.
         pass
 
+    def randomize(self):
+        for i in range(self.height):
+            for j in range(self.width):
+                self.grid[i][j] = mp.get_random_piece(mp.DEFAULT_PROBABILITIES)
 
+    def _convert_grid(self):
+        printable_grid = []
+        for row in self.grid:
+            for i in range(mp.PIECE_SIZE):
+                printable_row = []
+                for cell in row:
+                    printable_row += mp.printable_pieces[cell][i]
+                printable_grid.append(printable_row)
+        return printable_grid
 
-
-
+    def print_grid(self):
+        printable_grid = self._convert_grid()
+        width = len(printable_grid[0])
+        print(''.join('#' for _ in range(width + 2)))
+        for row in printable_grid:
+            print('#', end='')
+            for elem in row:
+                print(str(elem), end='')
+            print('#')
+        print(''.join('#' for _ in range(width + 2)))

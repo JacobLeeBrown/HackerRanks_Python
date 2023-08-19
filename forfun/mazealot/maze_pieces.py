@@ -1,3 +1,5 @@
+import random
+
 # There are 16 possible "pieces" to make a maze grid. The reason for this is
 # there are 4 possible entry points to each piece: left, up, right, down.
 # Each possible entry is either closed or open, giving us 2^4 options.
@@ -9,6 +11,9 @@
 #   0  0  1
 #   1  0  1
 # where the user can enter/exit from the left and bottom.
+
+PIECE_SIZE = 3
+PIECE_COUNT = 16
 
 all_pieces = [i for i in range(16)]
 
@@ -98,3 +103,19 @@ printable_pieces = [
      [1, 0, 1],
      [1, 1, 1]]
 ]
+# Relative Probability to Randomly Generate a Particular Piece
+DEFAULT_PROBABILITIES = [0.2, 0.8, 0.8, 1, 0.8, 1, 1, 0.5, 0.8, 1, 1, 0.5, 1, 0.5, 0.5, 0]
+
+
+def get_random_piece(p):
+    assert len(p) == PIECE_COUNT, f'Probability list is not expected length ({PIECE_COUNT})'
+    p_sum = sum(p)
+    rand = random.random() * p_sum
+    running_sum = 0
+    for i, p_ in enumerate(p):
+        if (running_sum + p_) < rand:
+            return i
+    # Should always return by now, but, just in case:
+    return random.randint(0, PIECE_COUNT - 1)
+
+
