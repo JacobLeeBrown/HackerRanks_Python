@@ -1,4 +1,5 @@
 import random
+from typing import List
 
 # There are 16 possible "pieces" to make a maze grid. The reason for this is
 # there are 4 possible entry points to each piece: left, up, right, down.
@@ -14,100 +15,11 @@ import random
 
 PIECE_SIZE = 3
 PIECE_COUNT = 16
-
-all_pieces = [i for i in range(16)]
-
-open_left = [i for i in range(8)]
-open_up = [i for i in range(4)] + [i for i in range(8, 15)]
-open_right = [0, 1, 4, 5, 8, 9, 12, 13]
-open_down = [i for i in range(0, 15, 2)]
-
-open_left_up = [x for x in all_pieces if x in open_left and x in open_up]
-open_up_right = [x for x in all_pieces if x in open_up and x in open_right]
-open_right_down = [x for x in all_pieces if x in open_right and x in open_down]
-open_down_left = [x for x in all_pieces if x in open_down and x in open_left]
-
-closed_left = [x for x in all_pieces if x not in open_left]
-closed_up = [x for x in all_pieces if x not in open_up]
-closed_right = [x for x in all_pieces if x not in open_right]
-closed_down = [x for x in all_pieces if x not in open_down]
-
-closed_left_up = [x for x in all_pieces if x not in open_left and x not in open_up]
-closed_up_right = [x for x in all_pieces if x not in open_up and x not in open_right]
-closed_right_down = [x for x in all_pieces if x not in open_right and x not in open_down]
-closed_down_left = [x for x in all_pieces if x not in open_down and x not in open_left]
-
-printable_pieces = [
-    # 0 = 0000
-    [[1, 0, 1],
-     [0, 0, 0],
-     [1, 0, 1]]
-    ,  # 1 = 0001
-    [[1, 0, 1],
-     [0, 0, 0],
-     [1, 1, 1]]
-    ,  # 2 = 0010
-    [[1, 0, 1],
-     [0, 0, 1],
-     [1, 0, 1]]
-    ,  # 3 = 0011
-    [[1, 0, 1],
-     [0, 0, 1],
-     [1, 1, 1]]
-    ,  # 4 = 0100
-    [[1, 1, 1],
-     [0, 0, 0],
-     [1, 0, 1]]
-    ,  # 5 = 0101
-    [[1, 1, 1],
-     [0, 0, 0],
-     [1, 1, 1]]
-    ,  # 6 = 0110
-    [[1, 1, 1],
-     [0, 0, 1],
-     [1, 0, 1]]
-    ,  # 7 = 0111
-    [[1, 1, 1],
-     [0, 0, 1],
-     [1, 1, 1]]
-    ,  # 8 = 1000
-    [[1, 0, 1],
-     [1, 0, 0],
-     [1, 0, 1]]
-    ,  # 9 = 1001
-    [[1, 0, 1],
-     [1, 0, 0],
-     [1, 1, 1]]
-    ,  # 10 = 1010
-    [[1, 0, 1],
-     [1, 0, 1],
-     [1, 0, 1]]
-    ,  # 11 = 1011
-    [[1, 0, 1],
-     [1, 0, 1],
-     [1, 1, 1]]
-    ,  # 12 = 1100
-    [[1, 1, 1],
-     [1, 0, 0],
-     [1, 0, 1]]
-    ,  # 13 = 1101
-    [[1, 1, 1],
-     [1, 0, 0],
-     [1, 1, 1]]
-    ,  # 14 = 1110
-    [[1, 1, 1],
-     [1, 0, 1],
-     [1, 0, 1]]
-    ,  # 15 = 1111
-    [[1, 1, 1],
-     [1, 0, 1],
-     [1, 1, 1]]
-]
 # Relative Probability to Randomly Generate a Particular Piece
 DEFAULT_PROBABILITIES = [0.2, 0.8, 0.8, 1, 0.8, 1, 1, 0.5, 0.8, 1, 1, 0.5, 1, 0.5, 0.5, 0]
 
 
-def get_random_piece(p):
+def get_random_piece(p) -> int:
     assert len(p) == PIECE_COUNT, f'Probability list is not expected length ({PIECE_COUNT})'
     p_sum = sum(p)
     rand = random.random() * p_sum
@@ -119,4 +31,41 @@ def get_random_piece(p):
     # Should always return by now, but, just in case:
     return random.randint(0, PIECE_COUNT - 1)
 
+
+LEFT, UP, DOWN, RIGHT = (0, 1, 2, 3)
+SIDE_COUNT = 4
+
+
+class MazePiece(object):
+
+    def __init__(self, piece_id: int):
+        self.piece_id = piece_id
+        self.open_sides = self._get_open_sides()
+
+    def _get_open_sides(self) -> List[int]:
+        # Basically converting to binary
+        res = [0, 0, 0, 0]
+        rem = self.piece_id
+        for i in range(SIDE_COUNT-1, -1, -1):
+            if rem % 2 == 1:
+                res[i] = 1
+                rem -= 1
+            rem /= 2
+        return res
+
+    def open_path(self, direction: int) -> int:
+        if self.open_sides[direction] == 0:
+            return self.piece_id
+        return self.piece_id + (2 ^ (SIDE_COUNT - 1 - direction))
+
+    def get_grid(self) -> List[List[int]]:
+        return [[1, self.open_sides[UP], 1],
+                [self.open_sides[LEFT], 0, self.open_sides[RIGHT]],
+                [1, self.open_sides[DOWN], 1]]
+
+    def is_open(self, direction: int) -> bool:
+        return self.open_sides[direction] == 0
+
+    def is_closed(self, direction: int) -> bool:
+        return self.open_sides[direction] == 1
 

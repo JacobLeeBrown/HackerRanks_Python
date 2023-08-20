@@ -1,4 +1,6 @@
 import maze_pieces as mp
+from maze_pieces import LEFT, UP, DOWN, RIGHT
+
 
 class Maze(object):
 
@@ -38,8 +40,8 @@ class Maze(object):
 
     def _verify(self):
         # Verify map bounds are valid
-        assert (self.width > 0), f'Width ({self.width}) is not positive!'
-        assert (self.height > 0), f'Height ({self.height}) is not positive!'
+        assert (self.width >= 3), f'Width ({self.width}) is too small!'
+        assert (self.height >= 3), f'Height ({self.height}) is too small!'
 
         # Verify starting position is along the edge of the maze
         if (self.start_x not in (0, self.width-1) and
@@ -76,7 +78,8 @@ class Maze(object):
             for i in range(mp.PIECE_SIZE):
                 printable_row = []
                 for cell in row:
-                    printable_row += mp.printable_pieces[cell][i]
+                    piece = mp.MazePiece(cell)
+                    printable_row += piece.get_grid()[i]
                 printable_grid.append(printable_row)
         return printable_grid
 
@@ -84,13 +87,50 @@ class Maze(object):
         for row in self.grid:
             print(row)
 
-    def print_maze(self, open=' ', wall='#'):
+    def print_maze(self, open_char=' ', wall_char='#'):
         printable_grid = self._convert_grid()
         width = len(printable_grid[0])
         print(''.join('#' for _ in range(width + 2)))
         for row in printable_grid:
             print('#', end='')
             for elem in row:
-                print(open if elem == 0 else wall, end='')
+                print(open_char if elem == 0 else wall_char, end='')
             print('#')
         print(''.join('#' for _ in range(width + 2)))
+
+    def _make_playable(self):
+        path_to_start = [[False for _ in range(self.width)] for _ in range(self.height)]
+        path_to_start[self.start_y][self.start_x] = True
+
+        for i in range(self.height):
+            for j in range(self.width):
+                if not path_to_start[i][j]:
+                    pass
+
+    def _connect_to_start(self, x_idx: int, y_idx: int,
+                          path_to_start):
+        cur_val = mp.MazePiece(self.grid[y_idx][x_idx])
+        # First check if any nearby piece connects to start
+        # To the right
+        if (x_idx + 1) < self.width and path_to_start[y_idx][x_idx + 1]:
+            right_val = mp.MazePiece(self.grid[y_idx][x_idx + 1])
+            self.grid[y_idx][x_idx] = cur_val.open_path(RIGHT)
+            self.grid[y_idx][x_idx + 1] = right_val.open_path(LEFT)
+        # Downward
+        if (y_idx + 1) < self.height and path_to_start[y_idx + 1][x_idx]:
+            down_val = mp.MazePiece(self.grid[y_idx + 1][x_idx])
+            self.grid[y_idx][x_idx] = cur_val.open_path(DOWN)
+            self.grid[y_idx + 1][x_idx] = down_val.open_path(UP)
+        # To the left
+        if (x_idx - 1) >= 0 and path_to_start[y_idx][x_idx - 1]:
+            left_val = mp.MazePiece(self.grid[y_idx][x_idx - 1])
+            self.grid[y_idx][x_idx] = cur_val.open_path(LEFT)
+            self.grid[y_idx][x_idx - 1] = left_val.open_path(RIGHT)
+        # Upward
+        if (y_idx - 1) >= 0 and path_to_start[y_idx - 1][x_idx]:
+            up_val = mp.MazePiece(self.grid[y_idx - 1][x_idx])
+            self.grid[y_idx][x_idx] = cur_val.open_path(UP)
+            self.grid[y_idx - 1][x_idx] = up_val.open_path(DOWN)
+
+        # If no connecting space connects to start, then work towards start
+
