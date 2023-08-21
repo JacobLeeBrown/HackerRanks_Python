@@ -1,5 +1,6 @@
 import maze_pieces as mp
 from maze_pieces import LEFT, UP, DOWN, RIGHT
+import random
 
 
 class Maze(object):
@@ -59,13 +60,12 @@ class Maze(object):
             assert False, f'Starting position ({self.start_x}, {self.start_y}) too close to ending position ({self.end_x}, {self.end_y})! ' \
                           f'They need to be at least 2 spaces apart.'
 
-    def generate_maze(self):
-        # Algorithm:
-        #   Randomly assign maze_pieces to grid
-        #   Traverse entire grid, making sure each spot connects to start
-        #       Can recursively track spots that do connect, then spots that
-        #       don't connect just need to connect to ones that do.
-        pass
+    def generate_maze(self, should_print=False):
+        self.randomize()
+        if should_print:
+            print('Before making playable:')
+            self.print_grid()
+        self._make_playable()
 
     def randomize(self):
         for i in range(self.height):
@@ -105,32 +105,108 @@ class Maze(object):
         for i in range(self.height):
             for j in range(self.width):
                 if not path_to_start[i][j]:
-                    pass
+                    traversed = [[False for _ in range(self.width)] for _ in range(self.height)]
+                    self._connect_to_start(j, i, path_to_start, traversed)
 
     def _connect_to_start(self, x_idx: int, y_idx: int,
-                          path_to_start):
+                          path_to_start, traversed):
         cur_val = mp.MazePiece(self.grid[y_idx][x_idx])
+        # No matter what, this piece will connect to start after code executes
+        path_to_start[y_idx][x_idx] = True
+
         # First check if any nearby piece connects to start
         # To the right
-        if (x_idx + 1) < self.width and path_to_start[y_idx][x_idx + 1]:
+        if self._connect_to_start_check(x_idx, y_idx, RIGHT, path_to_start, traversed):
             right_val = mp.MazePiece(self.grid[y_idx][x_idx + 1])
             self.grid[y_idx][x_idx] = cur_val.open_path(RIGHT)
             self.grid[y_idx][x_idx + 1] = right_val.open_path(LEFT)
+            return
         # Downward
-        if (y_idx + 1) < self.height and path_to_start[y_idx + 1][x_idx]:
+        elif self._connect_to_start_check(x_idx, y_idx, DOWN, path_to_start, traversed):
             down_val = mp.MazePiece(self.grid[y_idx + 1][x_idx])
             self.grid[y_idx][x_idx] = cur_val.open_path(DOWN)
             self.grid[y_idx + 1][x_idx] = down_val.open_path(UP)
+            return
         # To the left
-        if (x_idx - 1) >= 0 and path_to_start[y_idx][x_idx - 1]:
+        elif self._connect_to_start_check(x_idx, y_idx, LEFT, path_to_start, traversed):
             left_val = mp.MazePiece(self.grid[y_idx][x_idx - 1])
             self.grid[y_idx][x_idx] = cur_val.open_path(LEFT)
             self.grid[y_idx][x_idx - 1] = left_val.open_path(RIGHT)
+            return
         # Upward
-        if (y_idx - 1) >= 0 and path_to_start[y_idx - 1][x_idx]:
+        elif self._connect_to_start_check(x_idx, y_idx, UP, path_to_start, traversed):
             up_val = mp.MazePiece(self.grid[y_idx - 1][x_idx])
             self.grid[y_idx][x_idx] = cur_val.open_path(UP)
             self.grid[y_idx - 1][x_idx] = up_val.open_path(DOWN)
+            return
 
         # If no connecting space connects to start, then work towards start
+        traversed[y_idx][x_idx] = True
+        dir_to_start = self._direction_towards_start(x_idx, y_idx)
+        if dir_to_start == RIGHT:
+            right_val = mp.MazePiece(self.grid[y_idx][x_idx + 1])
+            self.grid[y_idx][x_idx] = cur_val.open_path(RIGHT)
+            self.grid[y_idx][x_idx + 1] = right_val.open_path(LEFT)
+            self._connect_to_start(x_idx + 1, y_idx, path_to_start, traversed)
+        elif dir_to_start == DOWN:
+            down_val = mp.MazePiece(self.grid[y_idx + 1][x_idx])
+            self.grid[y_idx][x_idx] = cur_val.open_path(DOWN)
+            self.grid[y_idx + 1][x_idx] = down_val.open_path(UP)
+            self._connect_to_start(x_idx, y_idx + 1, path_to_start, traversed)
+        elif dir_to_start == LEFT:
+            left_val = mp.MazePiece(self.grid[y_idx][x_idx - 1])
+            self.grid[y_idx][x_idx] = cur_val.open_path(LEFT)
+            self.grid[y_idx][x_idx - 1] = left_val.open_path(RIGHT)
+            self._connect_to_start(x_idx - 1, y_idx, path_to_start, traversed)
+        else:
+            up_val = mp.MazePiece(self.grid[y_idx - 1][x_idx])
+            self.grid[y_idx][x_idx] = cur_val.open_path(UP)
+            self.grid[y_idx - 1][x_idx] = up_val.open_path(DOWN)
+            self._connect_to_start(x_idx, y_idx - 1, path_to_start, traversed)
+
+    def _connect_to_start_check(self, x_idx: int, y_idx: int,
+                                direction: int, path_to_start,
+                                traversed):
+        if direction == RIGHT:
+            return (x_idx + 1) < self.width and path_to_start[y_idx][x_idx + 1] and not traversed[y_idx][x_idx + 1]
+        elif direction == DOWN:
+            return (y_idx + 1) < self.height and path_to_start[y_idx + 1][x_idx] and not traversed[y_idx + 1][x_idx]
+        elif direction == LEFT:
+            return (x_idx - 1) >= 0 and path_to_start[y_idx][x_idx - 1] and not traversed[y_idx][x_idx - 1]
+        else:
+            return (y_idx - 1) >= 0 and path_to_start[y_idx - 1][x_idx] and not traversed[y_idx - 1][x_idx]
+
+    def _direction_towards_start(self, x_idx: int, y_idx: int):
+        x_diff = x_idx - self.start_x
+        y_diff = y_idx - self.start_y
+
+        if abs(x_diff) >= abs(y_diff):
+            # Primary direction is RIGHT or LEFT
+            if x_diff < 0:
+                dir1 = RIGHT
+            else:
+                dir1 = LEFT
+            # Secondary direction is DOWN or UP
+            if y_diff < 0:
+                dir2 = DOWN
+            else:
+                dir2 = UP
+        else:
+            # Primary direction is DOWN or UP
+            if y_diff < 0:
+                dir1 = DOWN
+            else:
+                dir1 = UP
+            # Secondary direction is RIGHT or LEFT
+            if x_diff < 0:
+                dir2 = RIGHT
+            else:
+                dir2 = LEFT
+
+        # Add a little randomness
+        if random.random() <= 0.5:
+            return dir1
+        else:
+            return dir2
+
 

@@ -32,7 +32,7 @@ def get_random_piece(p) -> int:
     return random.randint(0, PIECE_COUNT - 1)
 
 
-LEFT, UP, DOWN, RIGHT = (0, 1, 2, 3)
+LEFT, UP, RIGHT, DOWN = (0, 1, 2, 3)
 SIDE_COUNT = 4
 
 
@@ -56,7 +56,7 @@ class MazePiece(object):
     def open_path(self, direction: int) -> int:
         if self.open_sides[direction] == 0:
             return self.piece_id
-        return self.piece_id + (2 ^ (SIDE_COUNT - 1 - direction))
+        return self.piece_id - (2 ** (SIDE_COUNT - 1 - direction))
 
     def get_grid(self) -> List[List[int]]:
         return [[1, self.open_sides[UP], 1],
