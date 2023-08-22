@@ -64,7 +64,10 @@ class Maze(object):
         self.randomize()
         if should_print:
             print('Before making playable:')
+            print('~~~~ Grid:')
             self.print_grid()
+            print('~~~~ Maze:')
+            self.print_maze()
         self._make_playable()
 
     def randomize(self):
@@ -99,14 +102,22 @@ class Maze(object):
         print(''.join('#' for _ in range(width + 2)))
 
     def _make_playable(self):
-        path_to_start = [[False for _ in range(self.width)] for _ in range(self.height)]
-        path_to_start[self.start_y][self.start_x] = True
+        path_to_start = self._init_path_to_start()
 
+        # To improve general maze generation, rather than iterate through all
+        # cells in a start-to-end fashion, randomly pick cells to connect to
+        # the start
+        coords = []
         for i in range(self.height):
             for j in range(self.width):
-                if not path_to_start[i][j]:
-                    traversed = [[False for _ in range(self.width)] for _ in range(self.height)]
-                    self._connect_to_start(j, i, path_to_start, traversed)
+                coords.append((j, i))
+
+        while len(coords) > 0:
+            rand_idx = random.randint(0, len(coords)-1)
+            x_pos, y_pos = coords.pop(rand_idx)
+            if not path_to_start[y_pos][x_pos]:
+                traversed = [[False for _ in range(self.width)] for _ in range(self.height)]
+                self._connect_to_start(x_pos, y_pos, path_to_start, traversed)
 
     def _connect_to_start(self, x_idx: int, y_idx: int,
                           path_to_start, traversed):
@@ -208,5 +219,36 @@ class Maze(object):
             return dir1
         else:
             return dir2
+
+    def _init_path_to_start(self):
+        path_to_start = [[False for _ in range(self.width)] for _ in range(self.height)]
+        # DFS from start
+        self._init_path_to_start_r(self.start_x, self.start_y, path_to_start)
+        return path_to_start
+
+    def _init_path_to_start_r(self, x_idx, y_idx, path_to_start):
+        if path_to_start[y_idx][x_idx]:
+            return
+
+        path_to_start[y_idx][x_idx] = True
+        cur_piece = mp.MazePiece(self.grid[y_idx][x_idx])
+
+        if x_idx + 1 < self.width and cur_piece.is_open(RIGHT):
+            right_val = mp.MazePiece(self.grid[y_idx][x_idx + 1])
+            if right_val.is_open(LEFT):
+                self._init_path_to_start_r(x_idx + 1, y_idx, path_to_start)
+        elif y_idx + 1 < self.height and cur_piece.is_open(DOWN):
+            down_val = mp.MazePiece(self.grid[y_idx + 1][x_idx])
+            if down_val.is_open(UP):
+                self._init_path_to_start_r(x_idx, y_idx + 1, path_to_start)
+        elif x_idx - 1 >= 0 and cur_piece.is_open(LEFT):
+            left_val = mp.MazePiece(self.grid[y_idx][x_idx - 1])
+            if left_val.is_open(RIGHT):
+                self._init_path_to_start_r(x_idx - 1, y_idx, path_to_start)
+        elif y_idx - 1 >= 0 and cur_piece.is_open(UP):
+            up_val = mp.MazePiece(self.grid[y_idx - 1][x_idx])
+            if up_val.is_open(DOWN):
+                self._init_path_to_start_r(x_idx, y_idx - 1, path_to_start)
+
 
 
