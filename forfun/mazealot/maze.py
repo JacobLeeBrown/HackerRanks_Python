@@ -2,6 +2,7 @@ import maze_pieces as mp
 from maze_pieces import LEFT, UP, DOWN, RIGHT
 import random
 
+OPEN, WALL = (0, 1)
 
 class Maze(object):
 
@@ -75,7 +76,7 @@ class Maze(object):
             for j in range(self.width):
                 self.grid[i][j] = mp.get_random_piece(mp.DEFAULT_PROBABILITIES)
 
-    def _convert_grid(self):
+    def convert_grid(self):
         printable_grid = []
         for row in self.grid:
             for i in range(mp.PIECE_SIZE):
@@ -91,13 +92,13 @@ class Maze(object):
             print(row)
 
     def print_maze(self, open_char=' ', wall_char='#'):
-        printable_grid = self._convert_grid()
+        printable_grid = self.convert_grid()
         width = len(printable_grid[0])
         print(''.join('#' for _ in range(width + 2)))
         for row in printable_grid:
             print('#', end='')
             for elem in row:
-                print(open_char if elem == 0 else wall_char, end='')
+                print(open_char if elem == OPEN else wall_char, end='')
             print('#')
         print(''.join('#' for _ in range(width + 2)))
 
