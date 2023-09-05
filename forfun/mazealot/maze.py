@@ -70,6 +70,7 @@ class Maze(object):
             print('~~~~ Maze:')
             self.print_maze()
         self._make_playable()
+        self._post_process()
 
     def randomize(self):
         for i in range(self.height):
@@ -251,5 +252,39 @@ class Maze(object):
             if up_val.is_open(DOWN):
                 self._init_path_to_start_r(x_idx, y_idx - 1, path_to_start)
 
+    def _post_process(self):
+        # Cleans up "nubs"; the paths from pieces that run into the walls of adjacent pieces
+        self._clean_nubs()
 
+        # Open start and end spots to the edge
+        self._open_to_edge(self.start_x, self.start_y)
+        self._open_to_edge(self.end_x, self.end_y)
 
+    def _clean_nubs(self):
+        for y_idx, row in enumerate(self.grid):
+            for x_idx, cell in enumerate(row):
+                cur_piece = mp.MazePiece(cell)
+                if cur_piece.is_open(RIGHT):
+                    if (x_idx + 1) >= self.width or mp.MazePiece(self.grid[y_idx][x_idx + 1]).is_closed(LEFT):
+                        cur_piece = mp.MazePiece(cur_piece.close_path(RIGHT))
+                if cur_piece.is_open(DOWN):
+                    if (y_idx + 1) >= self.height or mp.MazePiece(self.grid[y_idx + 1][x_idx]).is_closed(UP):
+                        cur_piece = mp.MazePiece(cur_piece.close_path(DOWN))
+                if cur_piece.is_open(LEFT):
+                    if (x_idx - 1) < 0 or mp.MazePiece(self.grid[y_idx][x_idx - 1]).is_closed(RIGHT):
+                        cur_piece = mp.MazePiece(cur_piece.close_path(LEFT))
+                if cur_piece.is_open(UP):
+                    if (y_idx - 1) < 0 or mp.MazePiece(self.grid[y_idx - 1][x_idx]).is_closed(DOWN):
+                        cur_piece = mp.MazePiece(cur_piece.close_path(UP))
+                self.grid[y_idx][x_idx] = cur_piece.piece_id
+
+    def _open_to_edge(self, x_idx, y_idx):
+        cur_piece = mp.MazePiece(self.grid[y_idx][x_idx])
+        if y_idx == 0:
+            self.grid[y_idx][x_idx] = cur_piece.open_path(UP)
+        elif y_idx == self.height - 1:
+            self.grid[y_idx][x_idx] = cur_piece.open_path(DOWN)
+        elif x_idx == 0:
+            self.grid[y_idx][x_idx] = cur_piece.open_path(LEFT)
+        elif x_idx == self.width - 1:
+            self.grid[y_idx][x_idx] = cur_piece.open_path(RIGHT)

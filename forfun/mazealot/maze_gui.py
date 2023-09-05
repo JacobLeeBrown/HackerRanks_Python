@@ -4,9 +4,13 @@ import tkinter as tk
 
 
 GRID_PIXEL_SIZE = 10
+MARKER_PIXEL_SIZE = 6
+PX_DIFF = GRID_PIXEL_SIZE - MARKER_PIXEL_SIZE
 WHITE = 'white'
 BLACK = 'black'
 RED = 'red'
+BLUE = 'blue'
+GREEN = 'green'
 
 
 class MazeGui(object):
@@ -53,6 +57,17 @@ class MazeGui(object):
                     c.create_rectangle(i * GRID_PIXEL_SIZE, j * GRID_PIXEL_SIZE,
                                        (i + 1) * GRID_PIXEL_SIZE, (j + 1) * GRID_PIXEL_SIZE,
                                        fill=self.wall_color)
+
+        self._draw_marker(self.maze.start_x * PIECE_SIZE + 1, self.maze.start_y * PIECE_SIZE + 1, BLUE)
+        self._draw_marker(self.maze.end_x * PIECE_SIZE + 1, self.maze.end_y * PIECE_SIZE + 1, GREEN)
+
+    def _draw_marker(self, x_idx, y_idx, color):
+        ref_x = x_idx * GRID_PIXEL_SIZE + (PX_DIFF / 2)
+        ref_y = y_idx * GRID_PIXEL_SIZE + (PX_DIFF / 2)
+        self.canvas.create_oval(ref_x, ref_y,
+                                ref_x + MARKER_PIXEL_SIZE,
+                                ref_y + MARKER_PIXEL_SIZE,
+                                fill=color)
 
 
 # Example Tkinter code:

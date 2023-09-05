@@ -15,5 +15,5 @@ def basic_maze():
 
 if __name__ == "__main__":
     # basic_maze()
-    m = MazeGui()
-    m.play()
+    mg = MazeGui(20, 20, 0, 0, 19, 19)
+    mg.play()

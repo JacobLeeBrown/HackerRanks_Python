@@ -58,6 +58,11 @@ class MazePiece(object):
             return self.piece_id
         return self.piece_id - (2 ** (SIDE_COUNT - 1 - direction))
 
+    def close_path(self, direction: int) -> int:
+        if self.open_sides[direction] == 1:
+            return self.piece_id
+        return self.piece_id + (2 ** (SIDE_COUNT - 1 - direction))
+
     def get_grid(self) -> List[List[int]]:
         return [[1, self.open_sides[UP], 1],
                 [self.open_sides[LEFT], 0, self.open_sides[RIGHT]],
