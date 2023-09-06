@@ -15,16 +15,43 @@ GREEN = 'green'
 
 class MazeGui(object):
 
+    TITLE = 'Maze 4 Dayz'
+
     def __init__(self, width_=10, height_=10,
                  start_x_=0, start_y_=0,
                  end_x_=9, end_y_=9,
                  background_color_=WHITE,
                  wall_color_=BLACK,
-                 accent_color_=RED):
+                 accent_color_=RED,
+                 title_=TITLE):
         """
         Parameters
         ----------
         @see maze.py
+        width_ : int
+            Width of the playable area of the maze (not including outer bounds).
+        height_ : int
+            Height of the maze.
+        start_x_ : int
+            X-coordinate of starting spot of maze. Zero being left most playable
+            column.
+        start_y_ : int
+            Y-coordinate of starting spot of maze. Zero being top most playable
+            row.
+        end_x_ : int
+            X-coordinate of ending spot of maze. Zero being left most playable
+            column.
+        end_y_ : int
+            Y-coordinate of ending spot of maze. Zero being top most playable
+            row.
+        background_color_: String
+            The color of open spaces.
+        wall_color_: String
+            The color of wall spaces.
+        accent_color_: String
+            The color of accent elements.
+        title_: String
+            The title of the canvas window.
         """
 
         m = Maze(width_, height_, start_x_, start_y_, end_x_, end_y_)
@@ -32,20 +59,60 @@ class MazeGui(object):
         self.maze = m
 
         self.width = width_ * PIECE_SIZE * GRID_PIXEL_SIZE
-        self.height = width_ * PIECE_SIZE * GRID_PIXEL_SIZE
+        self.height = height_ * PIECE_SIZE * GRID_PIXEL_SIZE
 
         self.background_color = background_color_
         self.wall_color = wall_color_
         self.accent_color = accent_color_
 
         self.root = tk.Tk()
-        self.root.title("Maze 4 Dayz")
+        self.title = title_
+        self.root.title(self.title)
+        self.canvas = tk.Canvas(self.root, width=self.width, height=self.height, bg=self.background_color)
+        self.canvas.pack()
+        self._draw_maze()
+
+    def __init__(self, maze_: Maze,
+                 background_color_=WHITE,
+                 wall_color_=BLACK,
+                 accent_color_=RED,
+                 title_=TITLE):
+        """
+        Parameters
+        ----------
+        maze_ : Maze
+            An existing Maze object to instantiate this GUI to.
+        background_color_: String
+            The color of open spaces.
+        wall_color_: String
+            The color of wall spaces.
+        accent_color_: String
+            The color of accent elements.
+        title_: String
+            The title of the canvas window.
+        """
+
+        self.maze = maze_
+
+        self.width = maze_.width * PIECE_SIZE * GRID_PIXEL_SIZE
+        self.height = maze_.height * PIECE_SIZE * GRID_PIXEL_SIZE
+
+        self.background_color = background_color_
+        self.wall_color = wall_color_
+        self.accent_color = accent_color_
+
+        self.root = tk.Tk()
+        self.title = title_
+        self.root.title(self.title)
         self.canvas = tk.Canvas(self.root, width=self.width, height=self.height, bg=self.background_color)
         self.canvas.pack()
         self._draw_maze()
 
     def play(self):
         self.root.mainloop()
+
+    def quit(self):
+        self.root.quit()
 
     def _draw_maze(self):
         c = self.canvas
@@ -123,3 +190,36 @@ class MazeGui(object):
 #
 #     # Start the GUI event loop
 #     root.mainloop()
+
+# import tkinter as tk
+# from tkinter import Canvas
+# from PIL import Image, ImageDraw
+#
+# # Create the main window
+# root = tk.Tk()
+# root.title("Export Canvas as PNG")
+#
+# # Create a canvas
+# canvas = Canvas(root, width=400, height=400, bg="white")
+# canvas.pack()
+#
+# # Draw something on the canvas (for demonstration)
+# canvas.create_rectangle(50, 50, 350, 350, fill="blue")
+#
+# # Function to export the canvas as PNG
+# def export_as_png():
+#     # Capture the canvas content as PostScript data
+#     ps_data = canvas.postscript(colormode="color")
+#
+#     # Convert PostScript data to an Image object
+#     img = Image.open(io.BytesIO(ps_data.encode("utf-8")))
+#
+#     # Save the Image object as a PNG file
+#     img.save("canvas.png")
+#
+# # Create a button to trigger export
+# export_button = tk.Button(root, text="Export as PNG", command=export_as_png)
+# export_button.pack()
+#
+# # Run the Tkinter main loop
+# root.mainloop()

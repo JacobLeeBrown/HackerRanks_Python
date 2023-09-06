@@ -19,3 +19,5 @@ port_scanner_output.txt
 
 # CSVs
 *.csv
+
+/forfun/mazealot/junk/

@@ -4,6 +4,7 @@ import random
 
 OPEN, WALL = (0, 1)
 
+
 class Maze(object):
 
     def __init__(self, width_=10, height_=10,
