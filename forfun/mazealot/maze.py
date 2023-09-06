@@ -111,9 +111,9 @@ class Maze(object):
         # cells in a start-to-end fashion, randomly pick cells to connect to
         # the start
         coords = []
-        for i in range(self.height):
-            for j in range(self.width):
-                coords.append((j, i))
+        for y_ in range(self.height):
+            for x_ in range(self.width):
+                coords.append((x_, y_))
 
         while len(coords) > 0:
             rand_idx = random.randint(0, len(coords)-1)
@@ -234,24 +234,34 @@ class Maze(object):
             return
 
         path_to_start[y_idx][x_idx] = True
-        cur_piece = mp.MazePiece(self.grid[y_idx][x_idx])
 
-        if x_idx + 1 < self.width and cur_piece.is_open(RIGHT):
-            right_val = mp.MazePiece(self.grid[y_idx][x_idx + 1])
-            if right_val.is_open(LEFT):
-                self._init_path_to_start_r(x_idx + 1, y_idx, path_to_start)
-        elif y_idx + 1 < self.height and cur_piece.is_open(DOWN):
-            down_val = mp.MazePiece(self.grid[y_idx + 1][x_idx])
-            if down_val.is_open(UP):
-                self._init_path_to_start_r(x_idx, y_idx + 1, path_to_start)
-        elif x_idx - 1 >= 0 and cur_piece.is_open(LEFT):
-            left_val = mp.MazePiece(self.grid[y_idx][x_idx - 1])
-            if left_val.is_open(RIGHT):
-                self._init_path_to_start_r(x_idx - 1, y_idx, path_to_start)
-        elif y_idx - 1 >= 0 and cur_piece.is_open(UP):
-            up_val = mp.MazePiece(self.grid[y_idx - 1][x_idx])
-            if up_val.is_open(DOWN):
-                self._init_path_to_start_r(x_idx, y_idx - 1, path_to_start)
+        if self._traverse_check(x_idx, y_idx, RIGHT):
+            self._init_path_to_start_r(x_idx + 1, y_idx, path_to_start)
+        if self._traverse_check(x_idx, y_idx, DOWN):
+            self._init_path_to_start_r(x_idx, y_idx + 1, path_to_start)
+        if self._traverse_check(x_idx, y_idx, LEFT):
+            self._init_path_to_start_r(x_idx - 1, y_idx, path_to_start)
+        if self._traverse_check(x_idx, y_idx, UP):
+            self._init_path_to_start_r(x_idx, y_idx - 1, path_to_start)
+
+    def _traverse_check(self, x_idx: int, y_idx: int, direction: int):
+        cur_piece = mp.MazePiece(self.grid[y_idx][x_idx])
+        if direction == RIGHT:
+            return (x_idx + 1) < self.width and\
+                   cur_piece.is_open(RIGHT) and\
+                   mp.MazePiece(self.grid[y_idx][x_idx + 1]).is_open(LEFT)
+        elif direction == DOWN:
+            return (y_idx + 1) < self.height and\
+                   cur_piece.is_open(DOWN) and\
+                   mp.MazePiece(self.grid[y_idx + 1][x_idx]).is_open(UP)
+        elif direction == LEFT:
+            return (x_idx - 1) >= 0 and\
+                   cur_piece.is_open(LEFT) and\
+                   mp.MazePiece(self.grid[y_idx][x_idx - 1]).is_open(RIGHT)
+        else:
+            return (y_idx - 1) >= 0 and\
+                   cur_piece.is_open(UP) and\
+                   mp.MazePiece(self.grid[y_idx - 1][x_idx]).is_open(DOWN)
 
     def _post_process(self):
         # Cleans up "nubs"; the paths from pieces that run into the walls of adjacent pieces

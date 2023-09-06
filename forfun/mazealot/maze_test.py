@@ -90,8 +90,8 @@ class TestMaze(unittest.TestCase):
         if traversed[y_idx][x_idx]:
             return
 
-        cur_val = MazePiece(grid[y_idx][x_idx])
         traversed[y_idx][x_idx] = True
+        cur_val = MazePiece(grid[y_idx][x_idx])
 
         # To the right
         if x_idx + 1 < width and cur_val.is_open(RIGHT) and MazePiece(grid[y_idx][x_idx + 1]).is_open(LEFT):
