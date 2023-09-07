@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import maze_pieces as mp
 from maze_pieces import LEFT, UP, DOWN, RIGHT
 import random
@@ -156,7 +158,7 @@ class Maze(object):
 
         # If no connecting space connects to start, then work towards start
         traversed[y_idx][x_idx] = True
-        dir_to_start = self._direction_towards_start(x_idx, y_idx)
+        dir_to_start = self._direction_towards_start_rand(x_idx, y_idx)
         if dir_to_start == RIGHT:
             right_val = mp.MazePiece(self.grid[y_idx][x_idx + 1])
             self.grid[y_idx][x_idx] = cur_val.open_path(RIGHT)
@@ -190,7 +192,15 @@ class Maze(object):
         else:
             return (y_idx - 1) >= 0 and path_to_start[y_idx - 1][x_idx] and not traversed[y_idx - 1][x_idx]
 
-    def _direction_towards_start(self, x_idx: int, y_idx: int):
+    def _direction_towards_start_rand(self, x_idx: int, y_idx: int, weight=0.5) -> int:
+        dir1, dir2 = self._direction_towards_start(x_idx, y_idx)
+        # Add a little randomness
+        if random.random() <= weight:
+            return dir1
+        else:
+            return dir2
+
+    def _direction_towards_start(self, x_idx: int, y_idx: int) -> Tuple[int, int]:
         x_diff = x_idx - self.start_x
         y_diff = y_idx - self.start_y
 
@@ -217,11 +227,7 @@ class Maze(object):
             else:
                 dir2 = LEFT
 
-        # Add a little randomness
-        if random.random() <= 0.5:
-            return dir1
-        else:
-            return dir2
+        return dir1, dir2
 
     def _init_path_to_start(self):
         path_to_start = [[False for _ in range(self.width)] for _ in range(self.height)]
@@ -235,16 +241,16 @@ class Maze(object):
 
         path_to_start[y_idx][x_idx] = True
 
-        if self._traverse_check(x_idx, y_idx, RIGHT):
+        if self._can_move_check(x_idx, y_idx, RIGHT):
             self._init_path_to_start_r(x_idx + 1, y_idx, path_to_start)
-        if self._traverse_check(x_idx, y_idx, DOWN):
+        if self._can_move_check(x_idx, y_idx, DOWN):
             self._init_path_to_start_r(x_idx, y_idx + 1, path_to_start)
-        if self._traverse_check(x_idx, y_idx, LEFT):
+        if self._can_move_check(x_idx, y_idx, LEFT):
             self._init_path_to_start_r(x_idx - 1, y_idx, path_to_start)
-        if self._traverse_check(x_idx, y_idx, UP):
+        if self._can_move_check(x_idx, y_idx, UP):
             self._init_path_to_start_r(x_idx, y_idx - 1, path_to_start)
 
-    def _traverse_check(self, x_idx: int, y_idx: int, direction: int):
+    def _can_move_check(self, x_idx: int, y_idx: int, direction: int) -> bool:
         cur_piece = mp.MazePiece(self.grid[y_idx][x_idx])
         if direction == RIGHT:
             return (x_idx + 1) < self.width and\

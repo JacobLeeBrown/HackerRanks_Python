@@ -63,6 +63,19 @@ class TestMaze(unittest.TestCase):
                           [1, 0, 1],
                           [1, 0, 1]], target.get_grid())
 
+    def test_direction_towards_start(self):
+        target = Maze()
+        self.assertEqual((LEFT, UP), target._direction_towards_start(5, 5))
+        self.assertEqual((LEFT, UP), target._direction_towards_start(9, 2))
+        self.assertEqual((UP, LEFT), target._direction_towards_start(2, 9))
+        self.assertEqual((LEFT, UP), target._direction_towards_start(0, 0))
+
+        target = Maze(start_x_=3, start_y_=9)
+        self.assertEqual((DOWN, LEFT), target._direction_towards_start(5, 5))
+        self.assertEqual((DOWN, RIGHT), target._direction_towards_start(1, 2))
+        self.assertEqual((RIGHT, DOWN), target._direction_towards_start(2, 8))
+        self.assertEqual((LEFT, UP), target._direction_towards_start(5, 9))
+
     def test_make_playable(self):
         fail_count = 0
         for i in range(10, 50):
