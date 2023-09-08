@@ -32,8 +32,41 @@ def get_random_piece(p) -> int:
     return random.randint(0, PIECE_COUNT - 1)
 
 
+# Bound Functions: Given an x-coord, y-coord, and Maze, returns if you can move
+# in the respective direction.
+
+# noinspection PyUnusedLocal
+def left_bound_func(x: int, y: int, m) -> bool:
+    return x - 1 >= 0
+
+
+# noinspection PyUnusedLocal
+def up_bound_func(x: int, y: int, m) -> bool:
+    return y - 1 >= 0
+
+
+# noinspection PyUnusedLocal
+def right_bound_func(x: int, y: int, m) -> bool:
+    return x + 1 < m.width
+
+
+# noinspection PyUnusedLocal
+def down_bound_func(x: int, y: int, m) -> bool:
+    return y + 1 < m.height
+
+
 LEFT, UP, RIGHT, DOWN = (0, 1, 2, 3)
-SIDE_COUNT = 4
+# For a given direction, what is the x-modifier, y-modifier, opposite direction,
+# and applicable bound function?
+X_MOD, Y_MOD, OPPOSITE, BOUND_FUNC = (0, 1, 2, 3)
+DIR_VALS = {
+    LEFT: [-1, 0, RIGHT, left_bound_func],
+    UP: [0, -1, DOWN, up_bound_func],
+    RIGHT: [1, 0, LEFT, right_bound_func],
+    DOWN: [0, 1, UP, down_bound_func]
+}
+DIRS = DIR_VALS.keys()
+SIDE_COUNT = len(DIRS)
 
 
 class MazePiece(object):
@@ -73,4 +106,3 @@ class MazePiece(object):
 
     def is_closed(self, direction: int) -> bool:
         return self.open_sides[direction] == 1
-

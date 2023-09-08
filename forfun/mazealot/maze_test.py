@@ -1,8 +1,7 @@
 import unittest
-from typing import List
 
 from maze import Maze
-from maze_pieces import MazePiece, LEFT, UP, RIGHT, DOWN
+from maze_pieces import *
 
 
 class TestMaze(unittest.TestCase):
@@ -78,24 +77,26 @@ class TestMaze(unittest.TestCase):
 
     def test_make_playable(self):
         fail_count = 0
-        for i in range(10, 50):
-            m = Maze(i, i, 0, 0, i-1, i-1)
-            m.randomize()
-            m._make_playable()
+        # Check 20 random mazes (from 10x10 to 29x29) 10 times (200 mazes total)
+        for j in range(10):
+            for i in range(10, 30):
+                m = Maze(i, i, 0, 0, i-1, i-1)
+                m.randomize()
+                m._make_playable()
 
-            grid = m.grid
-            traversed = [[False for _ in range(m.width)] for _ in range(m.height)]
-            self._traverse_maze_grid(0, 0, i, i, grid, traversed)
+                grid = m.grid
+                traversed = [[False for _ in range(m.width)] for _ in range(m.height)]
+                self._traverse_maze_grid(0, 0, i, i, grid, traversed)
 
-            for row in traversed:
-                should_break = False
-                for b in row:
-                    if not b:
-                        should_break = True
-                        fail_count += 1
+                for row in traversed:
+                    should_break = False
+                    for b in row:
+                        if not b:
+                            should_break = True
+                            fail_count += 1
+                            break
+                    if should_break:
                         break
-                if should_break:
-                    break
 
         self.assertEqual(0, fail_count)
 
@@ -118,6 +119,33 @@ class TestMaze(unittest.TestCase):
         # Upward
         if y_idx - 1 >= 0 and cur_val.is_open(UP) and MazePiece(grid[y_idx - 1][x_idx]).is_open(DOWN):
             self._traverse_maze_grid(x_idx, y_idx - 1, width, height, grid, traversed)
+
+    def test_clean_nubs(self):
+        fail_count = 0
+        # Check 20 random mazes (from 10x10 to 29x29) 10 times (200 mazes total)
+        for j in range(10):
+            for i in range(10, 30):
+                m = Maze(i, i, 0, 0, i-1, i-1)
+                m.randomize()
+                m._make_playable()
+                m._clean_nubs()
+
+                if self._check_for_nubs(m):
+                    fail_count += 1
+
+        self.assertEqual(0, fail_count)
+
+    @staticmethod
+    def _check_for_nubs(m: Maze) -> bool:
+        for y_idx, row in enumerate(m.grid):
+            for x_idx, cell in enumerate(row):
+                for d in DIRS:
+                    dv = DIR_VALS[d]
+                    if MazePiece(cell).is_open(d) and \
+                            (not dv[BOUND_FUNC](x_idx, y_idx, m) or
+                             MazePiece(m.grid[y_idx + dv[Y_MOD]][x_idx + dv[X_MOD]]).is_closed(dv[OPPOSITE])):
+                        return True
+        return False
 
 
 if __name__ == '__main__':

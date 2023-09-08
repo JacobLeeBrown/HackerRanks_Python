@@ -1,7 +1,4 @@
-from maze import Maze
-from maze_gui import MazeGui
-import time
-import tkinter as tk
+from maze_gui import *
 
 
 def basic_maze():
@@ -32,6 +29,6 @@ def debug_with_gui():
 
 if __name__ == "__main__":
     # basic_maze()
-    # mg = MazeGui(20, 20, 0, 0, 19, 19)
-    # mg.play()
-    debug_with_gui()
+    mg = MazeGui(None, 30, 30, 0, 0, 29, 29)
+    mg.play()
+    # debug_with_gui()

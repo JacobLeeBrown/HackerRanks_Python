@@ -1,4 +1,4 @@
-from maze import Maze, OPEN, WALL
+from maze import Maze, WALL
 from maze_pieces import PIECE_SIZE
 import tkinter as tk
 
@@ -17,9 +17,8 @@ class MazeGui(object):
 
     TITLE = 'Maze 4 Dayz'
 
-    def __init__(self, width_=10, height_=10,
-                 start_x_=0, start_y_=0,
-                 end_x_=9, end_y_=9,
+    def __init__(self, maze_: Maze, width_=10, height_=10,
+                 start_x_=0, start_y_=0, end_x_=9, end_y_=9,
                  background_color_=WHITE,
                  wall_color_=BLACK,
                  accent_color_=RED,
@@ -28,6 +27,9 @@ class MazeGui(object):
         Parameters
         ----------
         @see maze.py
+        maze_ : Maze
+            An existing Maze object to instantiate this GUI to. Will override
+            other parameters if provided.
         width_ : int
             Width of the playable area of the maze (not including outer bounds).
         height_ : int
@@ -54,48 +56,15 @@ class MazeGui(object):
             The title of the canvas window.
         """
 
-        m = Maze(width_, height_, start_x_, start_y_, end_x_, end_y_)
-        m.generate_maze()
-        self.maze = m
+        if maze_ is not None:
+            self.maze = maze_
+        else:
+            m = Maze(width_, height_, start_x_, start_y_, end_x_, end_y_)
+            m.generate_maze()
+            self.maze = m
 
-        self.width = width_ * PIECE_SIZE * GRID_PIXEL_SIZE
-        self.height = height_ * PIECE_SIZE * GRID_PIXEL_SIZE
-
-        self.background_color = background_color_
-        self.wall_color = wall_color_
-        self.accent_color = accent_color_
-
-        self.root = tk.Tk()
-        self.title = title_
-        self.root.title(self.title)
-        self.canvas = tk.Canvas(self.root, width=self.width, height=self.height, bg=self.background_color)
-        self.canvas.pack()
-        self._draw_maze()
-
-    def __init__(self, maze_: Maze,
-                 background_color_=WHITE,
-                 wall_color_=BLACK,
-                 accent_color_=RED,
-                 title_=TITLE):
-        """
-        Parameters
-        ----------
-        maze_ : Maze
-            An existing Maze object to instantiate this GUI to.
-        background_color_: String
-            The color of open spaces.
-        wall_color_: String
-            The color of wall spaces.
-        accent_color_: String
-            The color of accent elements.
-        title_: String
-            The title of the canvas window.
-        """
-
-        self.maze = maze_
-
-        self.width = maze_.width * PIECE_SIZE * GRID_PIXEL_SIZE
-        self.height = maze_.height * PIECE_SIZE * GRID_PIXEL_SIZE
+        self.width = self.maze.width * PIECE_SIZE * GRID_PIXEL_SIZE
+        self.height = self.maze.height * PIECE_SIZE * GRID_PIXEL_SIZE
 
         self.background_color = background_color_
         self.wall_color = wall_color_
