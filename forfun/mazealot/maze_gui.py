@@ -1,5 +1,5 @@
 from maze import Maze, WALL
-from maze_pieces import PIECE_SIZE
+from maze_pieces import PIECE_SIZE, MazePiece, LEFT, UP, RIGHT, DOWN, OPEN
 import tkinter as tk
 
 
@@ -63,6 +63,9 @@ class MazeGui(object):
             m.generate_maze()
             self.maze = m
 
+        self.x_pos = self.maze.start_x
+        self.y_pos = self.maze.start_y
+
         self.width = self.maze.width * PIECE_SIZE * GRID_PIXEL_SIZE
         self.height = self.maze.height * PIECE_SIZE * GRID_PIXEL_SIZE
 
@@ -75,7 +78,8 @@ class MazeGui(object):
         self.root.title(self.title)
         self.canvas = tk.Canvas(self.root, width=self.width, height=self.height, bg=self.background_color)
         self.canvas.pack()
-        self._draw_maze()
+        self._draw_maze_orig()
+        # self._draw_maze()
 
     def play(self):
         self.root.mainloop()
@@ -83,7 +87,11 @@ class MazeGui(object):
     def quit(self):
         self.root.quit()
 
-    def _draw_maze(self):
+    # Converts all elements of self.maze.grid to their associated 3x3 binary
+    # matrices, resulting in a large binary matrix of:
+    #   (self.height * maze_pieces.PIECE_SIZE) x (self.width * maze_pieces.PIECE_SIZE)
+    # and then draws the resulting maze 1 binary element at a time.
+    def _draw_maze_orig(self):
         c = self.canvas
         m = self.maze.convert_grid()
 
@@ -92,10 +100,75 @@ class MazeGui(object):
                 if cell is WALL:
                     c.create_rectangle(i * GRID_PIXEL_SIZE, j * GRID_PIXEL_SIZE,
                                        (i + 1) * GRID_PIXEL_SIZE, (j + 1) * GRID_PIXEL_SIZE,
-                                       fill=self.wall_color)
+                                       fill=self.wall_color, width=0)
 
         self._draw_marker(self.maze.start_x * PIECE_SIZE + 1, self.maze.start_y * PIECE_SIZE + 1, BLUE)
         self._draw_marker(self.maze.end_x * PIECE_SIZE + 1, self.maze.end_y * PIECE_SIZE + 1, GREEN)
+
+    # For each element of self.maze.grid, get the associated 3x3 binary matrix
+    # and draw that onto the canvas.
+    def _draw_maze(self):
+        c = self.canvas
+        m = self.maze.grid
+
+        for j, row in enumerate(m):
+            for i, cell in enumerate(row):
+                if cell is WALL:
+                    self._draw_maze_piece(c, i, j, GRID_PIXEL_SIZE * PIECE_SIZE, cell)
+
+        self._draw_marker(self.maze.start_x * PIECE_SIZE + 1, self.maze.start_y * PIECE_SIZE + 1, BLUE)
+        self._draw_marker(self.maze.end_x * PIECE_SIZE + 1, self.maze.end_y * PIECE_SIZE + 1, GREEN)
+
+    def _draw_maze_piece(self, c: tk.Canvas, cx: int, cy: int, c_size: int, piece_id: int,
+                         path_weight=0.8):
+        ref_x = cx * c_size
+        ref_y = cy * c_size
+        # Fill entire spot with "wall" color
+        c.create_rectangle(ref_x, ref_y, ref_x + c_size, ref_y + c_size, fill=self.wall_color, width=0)
+        # Fill center with "open" color
+        center_size = int(c_size * path_weight)
+        # assert (center_size % 2) == 0, f'Can\'t draw center, sizing values aren\'t nice! '
+        #                                f'c_size = {c_size}, path_weight = {path_weight}'
+        center_offset = (c_size - center_size) / 2
+        c.create_rectangle(ref_x + center_offset, ref_y * center_offset,
+                           ref_x + center_offset + center_size,
+                           ref_y + center_offset + center_size,
+                           fill=self.background_color, width=0)
+
+        # Now need to "open" up applicable sides
+        sides = MazePiece(piece_id).open_sides
+        for i, d in enumerate(sides):
+            if d == OPEN:
+                self._draw_maze_piece_open_side(c, ref_x, ref_y, c_size, i, path_weight)
+
+    def _draw_maze_piece_open_side(self, c: tk.Canvas, ref_x: int, ref_y: int, c_size: int,
+                                   direction: int, path_weight=0.8):
+        side_len = int(c_size * path_weight)
+        side_width = (c_size - side_len) / 2
+        if direction == LEFT:
+            c.create_rectangle(ref_x,
+                               ref_y + side_width,
+                               ref_x + side_width,
+                               ref_y + side_width + side_len,
+                               fill=self.background_color, width=0)
+        elif direction == UP:
+            c.create_rectangle(ref_x + side_width,
+                               ref_y,
+                               ref_x + c_size - side_width,
+                               ref_y + side_width,
+                               fill=self.background_color, width=0)
+        elif direction == RIGHT:
+            c.create_rectangle(ref_x + c_size - side_width,
+                               ref_y + side_width,
+                               ref_x + c_size,
+                               ref_y + c_size - side_width,
+                               fill=self.background_color, width=0)
+        elif direction == DOWN:
+            c.create_rectangle(ref_x + side_width,
+                               ref_y + c_size - side_width,
+                               ref_x + c_size - side_width,
+                               ref_y + c_size,
+                               fill=self.background_color, width=0)
 
     def _draw_marker(self, x_idx, y_idx, color):
         ref_x = x_idx * GRID_PIXEL_SIZE + (PX_DIFF / 2)

@@ -3,8 +3,6 @@ from typing import Tuple
 from maze_pieces import *
 import random
 
-OPEN, WALL = (0, 1)
-
 
 class Maze(object):
 

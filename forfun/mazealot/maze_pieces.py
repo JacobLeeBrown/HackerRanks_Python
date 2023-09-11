@@ -87,6 +87,8 @@ DIR_VALS = {
 DIRS = DIR_VALS.keys()
 SIDE_COUNT = len(DIRS)
 
+OPEN, WALL = (0, 1)
+
 
 class MazePiece(object):
 

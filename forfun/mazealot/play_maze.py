@@ -29,6 +29,7 @@ def debug_with_gui():
 
 if __name__ == "__main__":
     # basic_maze()
-    mg = MazeGui(None, 30, 30, 0, 0, 29, 29)
+    # mg = MazeGui(None, 30, 30, 0, 0, 29, 29)
+    mg = MazeGui(None)
     mg.play()
     # debug_with_gui()
