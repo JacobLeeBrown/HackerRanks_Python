@@ -1,6 +1,7 @@
 from maze import Maze, WALL
 from maze_pieces import PIECE_SIZE, MazePiece, LEFT, UP, RIGHT, DOWN, OPEN
 import tkinter as tk
+import tk_helper as th
 
 
 GRID_PIXEL_SIZE = 10
@@ -19,7 +20,7 @@ class MazeGui(object):
 
     def __init__(self, maze_: Maze, width_=10, height_=10,
                  start_x_=0, start_y_=0, end_x_=9, end_y_=9,
-                 background_color_=WHITE,
+                 path_color_=WHITE,
                  wall_color_=BLACK,
                  accent_color_=RED,
                  title_=TITLE):
@@ -46,7 +47,7 @@ class MazeGui(object):
         end_y_ : int
             Y-coordinate of ending spot of maze. Zero being top most playable
             row.
-        background_color_: String
+        path_color_: String
             The color of open spaces.
         wall_color_: String
             The color of wall spaces.
@@ -69,17 +70,17 @@ class MazeGui(object):
         self.width = self.maze.width * PIECE_SIZE * GRID_PIXEL_SIZE
         self.height = self.maze.height * PIECE_SIZE * GRID_PIXEL_SIZE
 
-        self.background_color = background_color_
+        self.path_color = path_color_
         self.wall_color = wall_color_
         self.accent_color = accent_color_
 
         self.root = tk.Tk()
         self.title = title_
         self.root.title(self.title)
-        self.canvas = tk.Canvas(self.root, width=self.width, height=self.height, bg=self.background_color)
+        self.canvas = tk.Canvas(self.root, width=self.width, height=self.height, bg=self.path_color)
         self.canvas.pack()
-        self._draw_maze_orig()
-        # self._draw_maze()
+        # self._draw_maze_orig()
+        self._draw_maze()
 
     def play(self):
         self.root.mainloop()
@@ -113,8 +114,7 @@ class MazeGui(object):
 
         for j, row in enumerate(m):
             for i, cell in enumerate(row):
-                if cell is WALL:
-                    self._draw_maze_piece(c, i, j, GRID_PIXEL_SIZE * PIECE_SIZE, cell)
+                self._draw_maze_piece(c, i, j, GRID_PIXEL_SIZE * PIECE_SIZE, cell)
 
         self._draw_marker(self.maze.start_x * PIECE_SIZE + 1, self.maze.start_y * PIECE_SIZE + 1, BLUE)
         self._draw_marker(self.maze.end_x * PIECE_SIZE + 1, self.maze.end_y * PIECE_SIZE + 1, GREEN)
@@ -124,22 +124,22 @@ class MazeGui(object):
         ref_x = cx * c_size
         ref_y = cy * c_size
         # Fill entire spot with "wall" color
-        c.create_rectangle(ref_x, ref_y, ref_x + c_size, ref_y + c_size, fill=self.wall_color, width=0)
+        th.rect(c, ref_x, ref_y, ref_x + c_size, ref_y + c_size, self.wall_color)
         # Fill center with "open" color
         center_size = int(c_size * path_weight)
         # assert (center_size % 2) == 0, f'Can\'t draw center, sizing values aren\'t nice! '
         #                                f'c_size = {c_size}, path_weight = {path_weight}'
-        center_offset = (c_size - center_size) / 2
-        c.create_rectangle(ref_x + center_offset, ref_y * center_offset,
-                           ref_x + center_offset + center_size,
-                           ref_y + center_offset + center_size,
-                           fill=self.background_color, width=0)
+        center_offset = int((c_size - center_size) / 2)
+        th.rect(c, ref_x + center_offset, ref_y * center_offset,
+                ref_x + center_offset + center_size,
+                ref_y + center_offset + center_size,
+                self.path_color)
 
         # Now need to "open" up applicable sides
-        sides = MazePiece(piece_id).open_sides
-        for i, d in enumerate(sides):
-            if d == OPEN:
-                self._draw_maze_piece_open_side(c, ref_x, ref_y, c_size, i, path_weight)
+        # sides = MazePiece(piece_id).open_sides
+        # for i, d in enumerate(sides):
+        #     if d == OPEN:
+        #         self._draw_maze_piece_open_side(c, ref_x, ref_y, c_size, i, path_weight)
 
     def _draw_maze_piece_open_side(self, c: tk.Canvas, ref_x: int, ref_y: int, c_size: int,
                                    direction: int, path_weight=0.8):
@@ -150,25 +150,25 @@ class MazeGui(object):
                                ref_y + side_width,
                                ref_x + side_width,
                                ref_y + side_width + side_len,
-                               fill=self.background_color, width=0)
+                               fill=self.path_color, width=0)
         elif direction == UP:
             c.create_rectangle(ref_x + side_width,
                                ref_y,
                                ref_x + c_size - side_width,
                                ref_y + side_width,
-                               fill=self.background_color, width=0)
+                               fill=self.path_color, width=0)
         elif direction == RIGHT:
             c.create_rectangle(ref_x + c_size - side_width,
                                ref_y + side_width,
                                ref_x + c_size,
                                ref_y + c_size - side_width,
-                               fill=self.background_color, width=0)
+                               fill=self.path_color, width=0)
         elif direction == DOWN:
             c.create_rectangle(ref_x + side_width,
                                ref_y + c_size - side_width,
                                ref_x + c_size - side_width,
                                ref_y + c_size,
-                               fill=self.background_color, width=0)
+                               fill=self.path_color, width=0)
 
     def _draw_marker(self, x_idx, y_idx, color):
         ref_x = x_idx * GRID_PIXEL_SIZE + (PX_DIFF / 2)
