@@ -32,7 +32,7 @@ def test_canvas():
     root = tk.Tk()
     title = 'Canvas Test'
     root.title(title)
-    c = tk.Canvas(root, width=1000, height=1000, bg='black')
+    c = tk.Canvas(root, width=1000, height=1000, bg='purple')
     c.pack()
 
     # Can see clear black "border" on bottom and right edges
@@ -58,6 +58,23 @@ def test_canvas():
     # c.create_rectangle(2, 2, 1001, 1001, fill='red', outline='red')
     # Can see thin black "border" on left and top edges
     # c.create_rectangle(3, 3, 1001, 1001, fill='red', outline='red')
+    # Can see thin black "border" on bottom and right edges
+    # c.create_rectangle(1, 1, 1000, 1000, fill='red', outline='red')
+
+    pixel_width = 200
+    colors = ['black', 'red', 'white', 'blue', 'green',
+              'red', 'black', 'white', 'blue', 'green',
+              'red', 'white', 'black', 'blue', 'green',
+              'red', 'white', 'blue', 'black', 'green',
+              'red', 'white', 'blue', 'green', 'black']
+    for i in range(5):
+        for j in range(5):
+            idx = i*5 + j
+            c.create_rectangle((j * pixel_width), (i * pixel_width),
+                               ((j + 1) * pixel_width) - 1, ((i + 1) * pixel_width) - 1,
+                               fill=colors[idx], outline=colors[idx])
+            # root.mainloop()  # For debugging
+
     root.mainloop()
 
 
