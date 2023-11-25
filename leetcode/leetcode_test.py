@@ -258,6 +258,24 @@ class TestLeetCode(unittest.TestCase):
         self.assertEqual(2, sol.characterReplacement('ABAA', 0))
         self.assertEqual(4, sol.characterReplacement('ABBB', 2))
 
+    def test_num_binary_ones(self):
+        self.assertEqual(0, sol._numBinaryOnes(0))
+        self.assertEqual(1, sol._numBinaryOnes(1))
+        self.assertEqual(1, sol._numBinaryOnes(2))
+        self.assertEqual(2, sol._numBinaryOnes(3))
+        self.assertEqual(1, sol._numBinaryOnes(4))
+        self.assertEqual(2, sol._numBinaryOnes(5))
+        self.assertEqual(2, sol._numBinaryOnes(6))
+
+    def test_count_bits(self):
+        self.assertEqual([0], sol.countBits(0))
+        self.assertEqual([0, 1], sol.countBits(1))
+        self.assertEqual([0, 1, 1], sol.countBits(2))
+        self.assertEqual([0, 1, 1, 2], sol.countBits(3))
+        self.assertEqual([0, 1, 1, 2, 1], sol.countBits(4))
+        self.assertEqual([0, 1, 1, 2, 1, 2], sol.countBits(5))
+        self.assertEqual([0, 1, 1, 2, 1, 2, 2], sol.countBits(6))
+
 
 if __name__ == '__main__':
     unittest.main()

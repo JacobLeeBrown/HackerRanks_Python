@@ -532,5 +532,44 @@ class Solution:
         return res
 
 
+    def mergeAlternately(self, word1: str, word2: str) -> str:
+        # 424
+        # Speed : 60%
+        # Memory: 44%
+        res = ''
+        len1 = len(word1)
+        len2 = len(word2)
+        for i in range(min(len1, len2)):
+            res += word1[i]
+            res += word2[i]
+        res += word1[i+1:]
+        res += word2[i+1:]
+        return res
+
+    countBitsAns = [0, 1, 1, 2, 1, 2]
+
+    def countBits(self, n: int) -> List[int]:
+        # 338
+        # Speed : 5%
+        # Memory: 8%
+        # TODO: Really bad performance all around?
+        curMax = len(self.countBitsAns) - 1
+        if (n > curMax):
+            # Need to calculate up to n
+            while (curMax < n):
+                curMax += 1
+                self.countBitsAns.append(self._numBinaryOnes(curMax))
+        return self.countBitsAns[:n+1]
+
+    def _numBinaryOnes(self, n: int) -> int:
+        res = 0
+        while n > 0:
+            if n % 2 == 1:
+                res += 1
+                n -= 1
+            n /= 2
+        return res
+
+
 if __name__ == '__main__':
     sol = Solution()
