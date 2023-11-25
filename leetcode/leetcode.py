@@ -531,7 +531,6 @@ class Solution:
                     res = running_count
         return res
 
-
     def mergeAlternately(self, word1: str, word2: str) -> str:
         # 424
         # Speed : 60%
@@ -546,22 +545,40 @@ class Solution:
         res += word2[i+1:]
         return res
 
-    countBitsAns = [0, 1, 1, 2, 1, 2]
+    countBitsAns = [0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4, 1, 2, 2, 3,
+                    2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5, 1, 2, 2, 3, 2, 3, 3, 4,
+                    2, 3, 3, 4, 3, 4, 4, 5, 2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5,
+                    4, 5, 5, 6, 1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5,
+                    2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 2, 3, 3, 4, 3]
 
     def countBits(self, n: int) -> List[int]:
         # 338
-        # Speed : 5%
-        # Memory: 8%
-        # TODO: Really bad performance all around?
-        curMax = len(self.countBitsAns) - 1
-        if (n > curMax):
+        # Speed : 65%
+        # Memory: 9%
+        # Uses built-in functions, but still not great on memory
+        cur_max = len(self.countBitsAns) - 1
+        if n > cur_max:
             # Need to calculate up to n
-            while (curMax < n):
-                curMax += 1
-                self.countBitsAns.append(self._numBinaryOnes(curMax))
+            while cur_max < n:
+                cur_max += 1
+                bn = bin(cur_max)
+                self.countBitsAns.append(bn.count('1'))
         return self.countBitsAns[:n+1]
 
-    def _numBinaryOnes(self, n: int) -> int:
+    def countBits_old(self, n: int) -> List[int]:
+        # 338
+        # Speed : 5%
+        # Memory: 8%
+        # Doesn't use several, useful, fast, built-in functions
+        cur_max = len(self.countBitsAns) - 1
+        if n > cur_max:
+            # Need to calculate up to n
+            while cur_max < n:
+                cur_max += 1
+                self.countBitsAns.append(self._num_binary_ones(cur_max))
+        return self.countBitsAns[:n+1]
+
+    def _num_binary_ones(self, n: int) -> int:
         res = 0
         while n > 0:
             if n % 2 == 1:

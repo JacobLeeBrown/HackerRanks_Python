@@ -259,13 +259,22 @@ class TestLeetCode(unittest.TestCase):
         self.assertEqual(4, sol.characterReplacement('ABBB', 2))
 
     def test_num_binary_ones(self):
-        self.assertEqual(0, sol._numBinaryOnes(0))
-        self.assertEqual(1, sol._numBinaryOnes(1))
-        self.assertEqual(1, sol._numBinaryOnes(2))
-        self.assertEqual(2, sol._numBinaryOnes(3))
-        self.assertEqual(1, sol._numBinaryOnes(4))
-        self.assertEqual(2, sol._numBinaryOnes(5))
-        self.assertEqual(2, sol._numBinaryOnes(6))
+        self.assertEqual(0, sol._num_binary_ones(0))
+        self.assertEqual(1, sol._num_binary_ones(1))
+        self.assertEqual(1, sol._num_binary_ones(2))
+        self.assertEqual(2, sol._num_binary_ones(3))
+        self.assertEqual(1, sol._num_binary_ones(4))
+        self.assertEqual(2, sol._num_binary_ones(5))
+        self.assertEqual(2, sol._num_binary_ones(6))
+
+    def test_count_bits(self):
+        self.assertEqual([0], sol.countBits_old(0))
+        self.assertEqual([0, 1], sol.countBits_old(1))
+        self.assertEqual([0, 1, 1], sol.countBits_old(2))
+        self.assertEqual([0, 1, 1, 2], sol.countBits_old(3))
+        self.assertEqual([0, 1, 1, 2, 1], sol.countBits_old(4))
+        self.assertEqual([0, 1, 1, 2, 1, 2], sol.countBits_old(5))
+        self.assertEqual([0, 1, 1, 2, 1, 2, 2], sol.countBits_old(6))
 
     def test_count_bits(self):
         self.assertEqual([0], sol.countBits(0))
@@ -275,6 +284,16 @@ class TestLeetCode(unittest.TestCase):
         self.assertEqual([0, 1, 1, 2, 1], sol.countBits(4))
         self.assertEqual([0, 1, 1, 2, 1, 2], sol.countBits(5))
         self.assertEqual([0, 1, 1, 2, 1, 2, 2], sol.countBits(6))
+
+    def test_get_count_bits(self):
+        print(sol.countBits(100))
+
+    def test_count_bits_print(self):
+        print(bin(0))
+        print(bin(2))
+        print(bin(5))
+        print(bin(11))
+        print(str(bin(11)))
 
 
 if __name__ == '__main__':
