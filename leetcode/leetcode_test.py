@@ -285,6 +285,28 @@ class TestLeetCode(unittest.TestCase):
         self.assertEqual([0, 1, 1, 2, 1, 2], sol.countBits(5))
         self.assertEqual([0, 1, 1, 2, 1, 2, 2], sol.countBits(6))
 
+    def test_is_divisor_of(self):
+        self.assertEqual(True, sol._isDivisorOf('ab', 'ababab'))
+        self.assertEqual(True, sol._isDivisorOf('ab', 'ab'))
+        self.assertEqual(False, sol._isDivisorOf('a', 'ab'))
+        self.assertEqual(False, sol._isDivisorOf('c', 'ab'))
+        self.assertEqual(False, sol._isDivisorOf('ab', 'abababc'))
+        self.assertEqual(False, sol._isDivisorOf('abcdefg', 'ab'))
+        self.assertEqual(False, sol._isDivisorOf('ababab', 'ab'))
+
+    def test_gcd_of_strings(self):
+        self.assertEqual('ab', sol.gcdOfStrings('ab', 'ababab'))
+        self.assertEqual('ab', sol.gcdOfStrings('abab', 'ababab'))
+        self.assertEqual('', sol.gcdOfStrings('abc', 'ababab'))
+        self.assertEqual('', sol.gcdOfStrings('abab', 'abcabcabc'))
+        self.assertEqual('', sol.gcdOfStrings('', 'abcabcabc'))
+        self.assertEqual('', sol.gcdOfStrings('ab', ''))
+
+    def test_kids_with_candies(self):
+        self.assertEqual([False, False, True], sol.kidsWithCandies([1, 1, 6], 3))
+        self.assertEqual([True, False, True], sol.kidsWithCandies([3, 1, 6], 3))
+        self.assertEqual([True, True, True], sol.kidsWithCandies([3, 1, 6], 5))
+
     def test_get_count_bits(self):
         print(sol.countBits(100))
 

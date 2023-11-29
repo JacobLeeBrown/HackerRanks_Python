@@ -587,6 +587,34 @@ class Solution:
             n /= 2
         return res
 
+    def gcdOfStrings(self, str1: str, str2: str) -> str:
+        # 1071
+        # Speed : 78%
+        # Memory: 20%
+
+        res = ''
+        cur_divisor = ''
+
+        for i, c in enumerate(str1):
+            cur_divisor += c
+            if self._isDivisorOf(cur_divisor, str1) and self._isDivisorOf(cur_divisor, str2):
+                res = cur_divisor
+        return res
+
+    def _isDivisorOf(self, divisor: str, quotient: str):
+        len_d = len(divisor)
+        len_q = len(quotient)
+        if len_d > len_q or len_q % len_d != 0:
+            return False
+        return quotient == (divisor * int(len_q / len_d))
+
+    def kidsWithCandies(self, candies: List[int], extraCandies: int) -> List[bool]:
+        # 1431
+        # Speed : 57%
+        # Memory: 11%
+        max_c = max(candies)
+        return [(c + extraCandies) >= max_c for c in candies]
+
 
 if __name__ == '__main__':
     sol = Solution()
