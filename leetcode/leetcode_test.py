@@ -307,15 +307,12 @@ class TestLeetCode(unittest.TestCase):
         self.assertEqual([True, False, True], sol.kidsWithCandies([3, 1, 6], 3))
         self.assertEqual([True, True, True], sol.kidsWithCandies([3, 1, 6], 5))
 
-    def test_get_count_bits(self):
-        print(sol.countBits(100))
-
-    def test_count_bits_print(self):
-        print(bin(0))
-        print(bin(2))
-        print(bin(5))
-        print(bin(11))
-        print(str(bin(11)))
+    def test_max_area(self):
+        self.assertEqual(1, sol.maxArea([1, 1]))
+        self.assertEqual(49, sol.maxArea([1, 8, 6, 2, 5, 4, 8, 3, 7]))
+        self.assertEqual(4, sol.maxArea([1, 2, 3, 2, 1]))
+        self.assertEqual(9, sol.maxArea([1, 2, 3, 4, 5, 6]))
+        self.assertEqual(24, sol.maxArea([1, 3, 2, 5, 25, 24, 5]))
 
 
 if __name__ == '__main__':

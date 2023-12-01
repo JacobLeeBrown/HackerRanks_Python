@@ -615,6 +615,39 @@ class Solution:
         max_c = max(candies)
         return [(c + extraCandies) >= max_c for c in candies]
 
+    def maxArea_naive(self, height: List[int]) -> int:
+        # 11
+        # Naive way is O(n^2)
+        res = 0
+        for i, a in enumerate(height):
+            for j, b in enumerate(height):
+                water = abs(j - i) * min(a, b)
+                if water > res:
+                    res = water
+        return res
+
+    def maxArea(self, height: List[int]) -> int:
+        # 11
+        # This solution is O(n), but broken :(
+        res = 0
+        i = 0
+        j = len(height) - 1
+        while i < j:
+            a = height[i]
+            b = height[j]
+            water = (j - i) * min(a, b)
+            if water > res:
+                res = water
+
+            # Should we move i or j inward?
+            c = height[i + 1]
+            d = height[j - 1]
+            if min(c, b) > min(a, d):
+                i += 1
+            else:
+                j -= 1
+        return res
+
 
 if __name__ == '__main__':
     sol = Solution()
