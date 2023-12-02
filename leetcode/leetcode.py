@@ -628,25 +628,61 @@ class Solution:
 
     def maxArea(self, height: List[int]) -> int:
         # 11
-        # This solution is O(n), but broken :(
+        # This solution is O(n)
+        # Speed : 86%
+        # Memory: 22%
         res = 0
         i = 0
         j = len(height) - 1
         while i < j:
             a = height[i]
             b = height[j]
-            water = (j - i) * min(a, b)
+            m = min(a, b)
+            water = (j - i) * m
             if water > res:
                 res = water
 
             # Should we move i or j inward?
-            c = height[i + 1]
-            d = height[j - 1]
-            if min(c, b) > min(a, d):
+            # Move the pointer that is on the min
+            if a == m:
                 i += 1
             else:
                 j -= 1
         return res
+
+    def findMaxAverage(self, nums: List[int], k: int) -> float:
+        # 643
+        # Speed : 6%
+        # Memory: 5%
+        # TODO: Improve, both super slow and space inefficient
+        if len(nums) == 1:
+            return nums[0] * 1.0
+
+        avgs = []
+        sums = []
+        res = None
+        for i, n in enumerate(nums):
+            avg_ = (n * 1.0) / (k * 1.0)
+            avgs.append(avg_)
+            if i == 0:
+                sums.append(avg_)
+            elif i < (k - 1):
+                sums.append(avg_ + sums[i - 1])
+            elif i == (k - 1):
+                rolling_sum = avg_ + sums[i - 1]
+                res = rolling_sum
+                sums.append(rolling_sum)
+            else:
+                rolling_sum = avg_ + sums[i - 1] - avgs[i - k]
+                if res is None or res < rolling_sum:
+                    res = rolling_sum
+                sums.append(rolling_sum)
+
+        return res
+
+    def pairSum(self, head: Optional[ListNode]) -> int:
+        # 2130
+        return 0
 
 
 if __name__ == '__main__':

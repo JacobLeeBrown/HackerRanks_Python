@@ -314,6 +314,14 @@ class TestLeetCode(unittest.TestCase):
         self.assertEqual(9, sol.maxArea([1, 2, 3, 4, 5, 6]))
         self.assertEqual(24, sol.maxArea([1, 3, 2, 5, 25, 24, 5]))
 
+    def test_find_max_average(self):
+        self.assertAlmostEqual(1, sol.findMaxAverage([1, 1, 1, 1, 1], 3))
+        self.assertAlmostEqual(2, sol.findMaxAverage([1, 2, 2, 2, 1], 3))
+        self.assertAlmostEqual(5, sol.findMaxAverage([5], 1))
+        self.assertAlmostEqual(5, sol.findMaxAverage([10, 0, 5, 5, 5], 3))
+        self.assertAlmostEqual(5, sol.findMaxAverage([10, 0, 5, 5, 5], 5))
+        self.assertAlmostEqual(6, sol.findMaxAverage([5, 0, 3, 6, -4, -1], 1))
+
 
 if __name__ == '__main__':
     unittest.main()
