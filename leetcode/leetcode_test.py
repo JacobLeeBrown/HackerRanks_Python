@@ -322,6 +322,35 @@ class TestLeetCode(unittest.TestCase):
         self.assertAlmostEqual(5, sol.findMaxAverage([10, 0, 5, 5, 5], 5))
         self.assertAlmostEqual(6, sol.findMaxAverage([5, 0, 3, 6, -4, -1], 1))
 
+    def test_pair_sum(self):
+        self.assertEqual(4, sol.pairSum(Ln.from_list([3, 1])))
+        self.assertEqual(4, sol.pairSum(Ln.from_list([3, 1, 3, 1])))
+        self.assertEqual(7, sol.pairSum(Ln.from_list([3, 2, 5, 0])))
+        self.assertEqual(3, sol.pairSum(Ln.from_list([3, -2, 5, 0])))
+        self.assertEqual(0, sol.pairSum(Ln.from_list([3, -2, 1, -3])))
+
+    def test_can_place_flowers(self):
+        self.assertEqual(True, sol.canPlaceFlowers([], 0))
+        self.assertEqual(False, sol.canPlaceFlowers([], 1))
+        self.assertEqual(True, sol.canPlaceFlowers([1], 0))
+        self.assertEqual(False, sol.canPlaceFlowers([1], 1))
+        self.assertEqual(True, sol.canPlaceFlowers([0], 1))
+        self.assertEqual(True, sol.canPlaceFlowers([0, 0], 1))
+        self.assertEqual(False, sol.canPlaceFlowers([0, 0], 2))
+        self.assertEqual(True, sol.canPlaceFlowers([0, 0, 0], 1))
+        self.assertEqual(True, sol.canPlaceFlowers([0, 0, 0], 2))
+        self.assertEqual(False, sol.canPlaceFlowers([0, 1, 0], 1))
+        self.assertEqual(True, sol.canPlaceFlowers([1, 0, 0], 1))
+        self.assertEqual(True, sol.canPlaceFlowers([0, 0, 1], 1))
+        self.assertEqual(True, sol.canPlaceFlowers([0, 0, 0, 0, 0], 3))
+        self.assertEqual(False, sol.canPlaceFlowers([0, 1, 0, 0, 0], 2))
+        self.assertEqual(True, sol.canPlaceFlowers([0, 0, 1, 0, 0], 2))
+        self.assertEqual(False, sol.canPlaceFlowers([0, 0, 1, 0, 0, 1], 2))
+        self.assertEqual(True, sol.canPlaceFlowers([0, 0, 1, 0, 1, 0], 1))
+        self.assertEqual(True, sol.canPlaceFlowers([0, 0, 1, 0, 0, 0, 1, 0], 2))
+        self.assertEqual(False, sol.canPlaceFlowers([1, 0, 0, 0, 0, 1], 2))
+        self.assertEqual(True, sol.canPlaceFlowers([0, 0, 0, 0, 1], 2))
+
 
 if __name__ == '__main__':
     unittest.main()

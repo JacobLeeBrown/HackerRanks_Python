@@ -682,7 +682,64 @@ class Solution:
 
     def pairSum(self, head: Optional[ListNode]) -> int:
         # 2130
-        return 0
+        # Speed : 46%
+        # Memory: 19%
+        if head is None:
+            return 0
+
+        nums = []
+        cur_node = head
+        while cur_node is not None:
+            nums.append(cur_node.val)
+            cur_node = cur_node.next
+
+        res = None
+        nums_size = len(nums)
+        for i in range(int(nums_size / 2)):
+            sum_ = nums[i] + nums[nums_size - 1 - i]
+            if res is None or sum_ > res:
+                res = sum_
+        return res
+
+    def canPlaceFlowers(self, flowerbed: List[int], n: int) -> bool:
+        # 605
+        # Speed : 79%
+        # Memory: 9%
+        bed_len = len(flowerbed)
+        if n == 0:
+            return True
+        elif bed_len == 0:
+            return False
+        elif bed_len == 1 and flowerbed[0] == 0 and n == 1:
+            return True
+
+        zero_count = 0
+        only_zeros = True
+        can_plant_count = 0
+        for i, f in enumerate(flowerbed):
+            if f == 1:
+                if only_zeros:  # Special handling for bed that starts with empty slots
+                    can_plant_count += int(zero_count / 2)
+                else:
+                    can_plant_count += int((zero_count - 1) / 2)
+                only_zeros = False
+
+                if can_plant_count >= n:
+                    return True
+                zero_count = 0
+            else:
+                zero_count += 1
+
+        if only_zeros:
+            return int((bed_len + 1) / 2) >= n
+
+        # Empty slots at the end have more wiggle room than empty slots in the middle
+        # Similar to the edge case for starting with multiple empty slots
+        can_plant_count += int(zero_count / 2)
+        if can_plant_count >= n:
+            return True
+
+        return False
 
 
 if __name__ == '__main__':
