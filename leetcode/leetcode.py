@@ -741,6 +741,25 @@ class Solution:
 
         return False
 
+    def findDifference(self, nums1: List[int], nums2: List[int]) -> List[List[int]]:
+        # 2215
+        # Speed : 60%
+        # Memory: 68%
+        set1 = set(nums1)
+        set2 = set(nums2)
+        res1 = list(set1 - set2)
+        res2 = list(set2 - set1)
+        return [res1, res2]
+
+    def maxProfit(self, prices: List[int], fee: int) -> int:
+        if len(prices) <= 1:
+            return 0
+
+        sum = 0
+        for p in prices[1:]:
+            pass
+        return 0
+
 
 if __name__ == '__main__':
     sol = Solution()

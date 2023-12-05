@@ -351,6 +351,12 @@ class TestLeetCode(unittest.TestCase):
         self.assertEqual(False, sol.canPlaceFlowers([1, 0, 0, 0, 0, 1], 2))
         self.assertEqual(True, sol.canPlaceFlowers([0, 0, 0, 0, 1], 2))
 
+    def test_find_difference(self):
+        self.assertEqual([[1, 3], [4, 6]], sol.findDifference([1, 2, 3], [2, 4, 6]))
+        self.assertEqual([[1, 2, 3], []], sol.findDifference([1, 2, 3], []))
+        self.assertEqual([[], [2, 4, 6]], sol.findDifference([], [2, 4, 6]))
+        self.assertEqual([[], [2, 4]], sol.findDifference([1, 3, 3], [1, 1, 2, 3, 4]))
+
 
 if __name__ == '__main__':
     unittest.main()
