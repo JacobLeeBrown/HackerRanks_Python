@@ -357,6 +357,15 @@ class TestLeetCode(unittest.TestCase):
         self.assertEqual([[], [2, 4, 6]], sol.findDifference([], [2, 4, 6]))
         self.assertEqual([[], [2, 4]], sol.findDifference([1, 3, 3], [1, 1, 2, 3, 4]))
 
+    def test_min_flips(self):
+        self.assertEqual(0, sol.minFlips(4, 2, 6))
+        self.assertEqual(0, sol.minFlips(4, 0, 4))
+        self.assertEqual(0, sol.minFlips(4, 4, 4))
+        self.assertEqual(1, sol.minFlips(4, 2, 7))
+        self.assertEqual(4, sol.minFlips(6, 3, 0))
+        self.assertEqual(2, sol.minFlips(12, 3, 3))
+        self.assertEqual(4, sol.minFlips(0, 0, 15))
+
 
 if __name__ == '__main__':
     unittest.main()

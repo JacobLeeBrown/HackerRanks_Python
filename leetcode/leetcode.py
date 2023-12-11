@@ -760,6 +760,46 @@ class Solution:
             pass
         return 0
 
+    tribonacci_ans = [0, 1, 1, 2, 4, 7, 13, 24]
+
+    def tribonacci(self, n: int) -> int:
+        # 1137
+        # Speed : 70%
+        # Memory: 15%
+        i = len(self.tribonacci_ans)
+        while i <= n:
+            self.tribonacci_ans.append(
+                self.tribonacci_ans[i - 3] +
+                self.tribonacci_ans[i - 2] +
+                self.tribonacci_ans[i - 1]
+            )
+            i += 1
+        return self.tribonacci_ans[n]
+
+    def minFlips(self, a: int, b: int, c: int) -> int:
+        # 1318
+        # Speed : 19%
+        # Memory: 55%
+        bin_a = str(bin(a))[2:]
+        bin_b = str(bin(b))[2:]
+        bin_c = str(bin(c))[2:]
+        max_len = max(len(bin_a), len(bin_b), len(bin_c))
+        bin_a = bin_a.rjust(max_len, '0')
+        bin_b = bin_b.rjust(max_len, '0')
+        bin_c = bin_c.rjust(max_len, '0')
+
+        res = 0
+        for i, a_bit_ in enumerate(bin_a):
+            a_bit_ = int(a_bit_)
+            a_bit = bool(a_bit_)
+            b_bit_ = int(bin_b[i])
+            b_bit = bool(b_bit_)
+            c_bit = bool(int(bin_c[i]))
+            if c_bit and not (a_bit or b_bit):
+                res += 1
+            elif not c_bit:
+                res += (a_bit_ + b_bit_)
+        return res
 
 if __name__ == '__main__':
     sol = Solution()
