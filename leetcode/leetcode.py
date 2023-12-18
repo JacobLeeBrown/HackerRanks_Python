@@ -1,5 +1,5 @@
 
-from typing import List, Optional
+from typing import List, Optional, Set, Tuple
 from ListNode import ListNode
 from Nodes import Node, TreeNode
 
@@ -800,6 +800,58 @@ class Solution:
             elif not c_bit:
                 res += (a_bit_ + b_bit_)
         return res
+
+    def nearestExit(self, maze: List[List[str]], entrance: List[int]) -> int:
+        # 1926
+        # Maze has '.' for free spaces and '+' for walls
+        # Speed : 24%
+        # Memory: 73%
+        OPEN, WALL = '.', '+'
+        rows = len(maze)
+        cols = len(maze[0])
+        traversed = [[False for _ in range(cols)] for _ in range(rows)]
+        start = (entrance[0], entrance[1])
+        next_checks = {start}
+        distance = 0
+        while len(next_checks) > 0:
+            if self._at_exit(next_checks, start, rows, cols):
+                return distance
+            next_next_checks = set()
+            for (y, x) in next_checks:
+                next_checks_from_here = self._get_spots_to_traverse(
+                    maze, traversed, y, x, rows, cols, OPEN
+                )
+                next_next_checks = next_next_checks.union(next_checks_from_here)
+            next_checks = next_next_checks
+            distance += 1
+        return -1
+
+    def _get_spots_to_traverse(self, maze: List[List[str]], traversed: List[List[bool]],
+                              y: int, x: int, rows: int, cols: int, open_char: chr) -> Set[Tuple[int, int]]:
+        traversed[y][x] = True
+        res = set()
+        # UP
+        if y - 1 >= 0 and maze[y - 1][x] == open_char and not traversed[y - 1][x]:
+            res.add((y - 1, x))
+        # DOWN
+        if y + 1 < rows and maze[y + 1][x] == open_char and not traversed[y + 1][x]:
+            res.add((y + 1, x))
+        # LEFT
+        if x - 1 >= 0 and maze[y][x - 1] == open_char and not traversed[y][x - 1]:
+            res.add((y, x - 1))
+        # RIGHT
+        if x + 1 < cols and maze[y][x + 1] == open_char and not traversed[y][x + 1]:
+            res.add((y, x + 1))
+        return res
+
+    def _at_exit(self, positions: Set[Tuple[int, int]], entrance: Tuple[int, int], rows: int, cols: int) -> bool:
+        start_y, start_x = entrance
+        for (y, x) in positions:
+            if (y == 0 or y == rows - 1 or x == 0 or x == cols - 1) and \
+                    not (y == start_y and x == start_x):
+                return True
+        return False
+
 
 if __name__ == '__main__':
     sol = Solution()

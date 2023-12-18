@@ -366,6 +366,40 @@ class TestLeetCode(unittest.TestCase):
         self.assertEqual(2, sol.minFlips(12, 3, 3))
         self.assertEqual(4, sol.minFlips(0, 0, 15))
 
+    def test_nearest_exit(self):
+        self.assertEqual(2, sol.nearestExit(
+            [
+                ['+', '+', '+'],
+                ['.', '.', '.'],
+                ['+', '+', '+']
+            ],
+            [1, 0]
+        ))
+        self.assertEqual(1, sol.nearestExit(
+            [
+                ['+', '+', '+'],
+                ['.', '.', '.'],
+                ['+', '+', '+']
+            ],
+            [1, 1]
+        ))
+        self.assertEqual(-1, sol.nearestExit(
+            [
+                ['+', '+', '+'],
+                ['+', '.', '+'],
+                ['+', '+', '+']
+            ],
+            [1, 1]
+        ))
+        self.assertEqual(2, sol.nearestExit(
+            [
+                ['+', '.', '+'],
+                ['+', '.', '+'],
+                ['+', '.', '+']
+            ],
+            [0, 1]
+        ))
+
 
 if __name__ == '__main__':
     unittest.main()
