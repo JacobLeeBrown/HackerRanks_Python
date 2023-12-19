@@ -852,6 +852,47 @@ class Solution:
                 return True
         return False
 
+    def guessNumber(self, n: int) -> int:
+        # 374
+        # Speed : 46%
+        # Memory: 84%
+
+        # The guess API is already defined for you.
+        # @param num, your guess
+        # @return -1 if num is higher than the picked number
+        #          1 if num is lower than the picked number
+        #          otherwise return 0
+        # def guess(num: int) -> int:
+
+        if n == 1:
+            return n
+        low = 0
+        high = n + 1
+        while True:
+            mid = low + int((high - low)/2)
+            res_ = self.guess(mid)
+            if res_ == -1:
+                high = mid
+            elif res_ == 1:
+                low = mid
+            else:
+                return mid
+
+    guess_number_ans = 0
+
+    def set_guess_number_ans(self, num: int):
+        self.guess_number_ans = num
+
+    def guess(self, num: int) -> int:
+        if num < self.guess_number_ans:
+            return 1
+        elif num > self.guess_number_ans:
+            return -1
+        else:
+            return 0
+
+
+
 
 if __name__ == '__main__':
     sol = Solution()

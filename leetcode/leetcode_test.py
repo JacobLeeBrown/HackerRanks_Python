@@ -400,6 +400,16 @@ class TestLeetCode(unittest.TestCase):
             [0, 1]
         ))
 
+    def test_guess_number(self):
+        sol.set_guess_number_ans(4)
+        self.assertEqual(4, sol.guessNumber(5))
+        sol.set_guess_number_ans(1)
+        self.assertEqual(1, sol.guessNumber(5))
+        sol.set_guess_number_ans(5)
+        self.assertEqual(5, sol.guessNumber(5))
+        sol.set_guess_number_ans(4)
+        self.assertEqual(4, sol.guessNumber(12))
+
 
 if __name__ == '__main__':
     unittest.main()
