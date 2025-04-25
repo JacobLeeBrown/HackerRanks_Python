@@ -7,7 +7,7 @@ import math
 
 
 WORDLE_LEN = 5
-FIRST_WORDLE_DATE = date(2021, 6, 16)
+FIRST_WORDLE_DATE = date(2021, 6, 20)
 DATE_IN_FORMAT = '%b %d %Y'
 DATE_OUT_FORMAT = '%Y-%m-%d'
 ALL_WORDLE_WORDS_FILE = 'all_wordle_words.csv'
