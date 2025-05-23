@@ -14,7 +14,7 @@ ALL_WORDLE_WORDS_FILE = 'all_wordle_words.csv'
 USED_WORDS_CSV_FILE = 'used_words.csv'
 USED_WORDS_SORTED_FILE = 'used_words_sorted.txt'
 IGNORED_WORDS_FILE = 'ignored_words.txt'
-POSSIBLE_WORD_FILE = 'possible_wordle_words_simple.txt'
+POSSIBLE_WORD_FILE = 'possible_wordle_words.txt'
 
 
 def get_all_used_words():
