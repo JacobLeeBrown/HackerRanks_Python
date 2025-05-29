@@ -16,6 +16,7 @@ port_scanner_output.txt
 /forfun/wordle/temp_diff.txt
 /forfun/autosurvey/my_env.py
 /forfun/autosurvey/question_db.txt
+/forfun/wordle/scratch.py
 
 # CSVs
 *.csv
