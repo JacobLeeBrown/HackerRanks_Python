@@ -90,7 +90,7 @@ def _fill_dict(d, key_set=string.ascii_uppercase):
     return d
 
 
-def find_best_words(words, letter_count, letter_index_count, n=10, should_print=False):
+def find_best_words(words, letter_count, letter_index_count, n=10, allow_duplicate_letters=True, should_print=False):
     """ Determines the best entries from `words` based on scoring system, using
     statistics from `letter_count` and `letter_index_count`.
 
@@ -106,6 +106,8 @@ def find_best_words(words, letter_count, letter_index_count, n=10, should_print=
         the per-index count of the character.
     n : int, default=10
         The number of top scoring words to return.
+    allow_duplicate_letters : bool, default=True
+        If true, result set will contain words with duplicate letters.
     should_print : bool, default=False
         True to print top words to console.
 
@@ -116,12 +118,24 @@ def find_best_words(words, letter_count, letter_index_count, n=10, should_print=
     """
     best_words = []
     for word in words:
+        if not allow_duplicate_letters and _has_duplicate_letters(word):
+            continue
         word_score = _score_word(word, letter_count, letter_index_count)
         best_words = _update_top_x(best_words, (word, word_score), n)
 
     if should_print:
         print(best_words)
     return best_words
+
+
+def _has_duplicate_letters(target:str) -> bool:
+    letter_map = set()
+    for char in target:
+        if char in letter_map:
+            return True
+        else:
+            letter_map.add(char)
+    return False
 
 
 def _score_word(word, letter_count, letter_index_count):

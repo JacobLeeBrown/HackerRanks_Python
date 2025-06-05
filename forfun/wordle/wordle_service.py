@@ -212,16 +212,22 @@ def analysis_with_user_input(correct_=None, close_=None, wrong_=''):
     last_n_words = get_last_n_used_words(n=10)
     # Solving
     while True:
-        potential_solutions = solver(possible_wordle_words, ignored_words, correct_, close_, wrong_)
-        best_solutions = was.find_best_words(potential_solutions, analysis[0], analysis[1], n=20, should_print=False)
-
         print(f'Last 10 Wordle Words: {last_n_words}')
+
         print('#### Ignored Potential Solutions')
         ignored_solutions = solver(ignored_words, set(), correct_, close_, wrong_)
-        print_list_with_cols(was.find_best_words(ignored_solutions, analysis[0], analysis[1], n=10, should_print=False), 3)
+        print_list_with_cols(was.find_best_words(ignored_solutions, analysis[0], analysis[1], n=10), 3)
+        print('####')
+
+        potential_solutions = solver(possible_wordle_words, ignored_words, correct_, close_, wrong_)
+
+        print('#### Best Potential Solutions - No dupes')
+        best_solutions_no_dupes = was.find_best_words(potential_solutions, analysis[0], analysis[1], n=20, allow_duplicate_letters=False)
+        print_list_with_cols(best_solutions_no_dupes, 3)
         print('####')
 
         print('#### Best Potential Solutions')
+        best_solutions = was.find_best_words(potential_solutions, analysis[0], analysis[1], n=20)
         print_list_with_cols(best_solutions, 3)
         print('####')
 
