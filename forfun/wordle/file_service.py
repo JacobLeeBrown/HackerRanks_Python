@@ -91,7 +91,7 @@ def file_diff(file_a, file_b, output_file):
           f'Successfully wrote {word_count} to {output_file}')
 
 
-def add_to_file(lines, file):
+def add_to_file(lines, file, sort=False):
     """ Adds entries of `lines` to the end of `file`, putting each on a newline.
     Will only write entries not already in `file`.
 
@@ -101,6 +101,8 @@ def add_to_file(lines, file):
         Lines to append to the end of the target file.
     file : str
         Name of file to append lines to.
+    sort : bool
+        True if lines of the file should be sorted alphabetically.
     """
     print(f'Passed lines total count = {len(lines)}')
     file_lines = load_words(file)
@@ -108,7 +110,12 @@ def add_to_file(lines, file):
     new_entries = lines - file_lines
     if len(new_entries) != 0:
         with open(file, 'a') as file_:
-            file_.write('\n' + '\n'.join(new_entries))
+            if sort:
+                for entry in new_entries:
+                    file_lines.add(entry)
+                file_.writelines(sorted(file_lines))
+            else:
+                file_.write('\n' + '\n'.join(new_entries))
 
     print(f'Wrote {len(new_entries)} lines in passed lines not in {file} to {file}.')
 

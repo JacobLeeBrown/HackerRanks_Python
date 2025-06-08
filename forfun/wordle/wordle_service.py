@@ -318,8 +318,8 @@ def _action_new_wordle_word():
 
 def update_files_with_new_word(word):
     word = word.upper()
-    fs.add_to_file({word}, USED_WORDS_SORTED_FILE)
-    fs.add_to_file({word}, IGNORED_WORDS_FILE)
+    fs.add_to_file({word}, USED_WORDS_SORTED_FILE, True)
+    fs.add_to_file({word}, IGNORED_WORDS_FILE, True)
 
     today = date.today()
     today_id = (today - FIRST_WORDLE_DATE).days + 1
