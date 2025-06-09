@@ -109,12 +109,13 @@ def add_to_file(lines, file, sort=False):
     print(f'{file} total line count = {len(file_lines)}')
     new_entries = lines - file_lines
     if len(new_entries) != 0:
-        with open(file, 'a') as file_:
-            if sort:
-                for entry in new_entries:
-                    file_lines.add(entry)
-                file_.writelines(sorted(file_lines))
-            else:
+        if sort:
+            for entry in new_entries:
+                file_lines.add(entry)
+            with open(file, 'w') as file_:
+                file_.writelines('\n'.join(sorted(file_lines)))
+        else:
+            with open(file, 'a') as file_:
                 file_.write('\n' + '\n'.join(new_entries))
 
     print(f'Wrote {len(new_entries)} lines in passed lines not in {file} to {file}.')
