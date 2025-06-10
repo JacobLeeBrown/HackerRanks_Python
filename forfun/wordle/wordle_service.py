@@ -277,7 +277,7 @@ def _action_remove_words(words):
         return {}
     words_to_remove = my_splice([x[0] for x in words], user_input)
     print(f'Removed words = {words_to_remove}')
-    fs.add_to_file(words_to_remove, IGNORED_WORDS_FILE)
+    fs.add_to_file(words_to_remove, IGNORED_WORDS_FILE, True)
     return words_to_remove
 
 
