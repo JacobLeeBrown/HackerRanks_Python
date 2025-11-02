@@ -46,9 +46,9 @@ if __name__ == '__main__':
 
     while True:
         user_input = input('What word would you like to add? ')
+        if user_input == 'q':
+            break
         if len(user_input) != 5:
             print('Word must be 5 letters, please try again.')
         else:
-            break
-
-    update_files_with_new_word(user_input)
+            update_files_with_new_word(user_input)
