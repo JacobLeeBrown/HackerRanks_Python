@@ -22,3 +22,10 @@ port_scanner_output.txt
 *.csv
 
 /forfun/mazealot/junk/
+
+# Browser profiles / scraping caches
+.ebay_browser_profile/
+scratch_*/
+temp_*/
+test_profile/
+
