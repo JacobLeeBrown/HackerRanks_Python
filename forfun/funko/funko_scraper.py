@@ -3,7 +3,7 @@
 Scrapes sold listings on eBay for target Funko Pops defined in funkos.csv,
 filters listings using positive and negative keyword matching, calculates
 the average USD market value, and updates the CSV file in-place for rows
-missing a last_updated date.
+missing a last_updated date or older than 30 days.
 """
 
 from __future__ import annotations
@@ -12,7 +12,6 @@ import argparse
 import csv
 import os
 import re
-import sys
 import time
 import urllib.parse
 import urllib.request
@@ -87,6 +86,25 @@ class ListingItem:
     title: str
     price: float
     raw_price: str = ""
+
+
+def needs_update(
+    last_updated_str: str,
+    max_age_days: int = 30,
+    today: date | None = None,
+) -> bool:
+    """Determine if a listing requires scraping or re-scraping.
+    
+    Returns True if last_updated is missing, empty, invalid, or older than max_age_days.
+    """
+    if not last_updated_str or not last_updated_str.strip():
+        return True
+    try:
+        updated_date = date.fromisoformat(last_updated_str.strip())
+        current_date = today or date.today()
+        return (current_date - updated_date).days > max_age_days
+    except ValueError:
+        return True
 
 
 def load_possible_keywords(file_path: str) -> list[str]:
@@ -479,6 +497,7 @@ def update_funkos_csv(
     user_data_dir: str | None = None,
     use_browser: bool = True,
     html_fetcher: Callable[[str], str] | None = None,
+    max_age_days: int = 30,
 ) -> None:
     """Process funkos.csv, fetch sold data for un-updated rows, and update in-place."""
     if not os.path.exists(csv_path):
@@ -501,13 +520,13 @@ def update_funkos_csv(
         r for r in rows
         if r.get("name", "").strip()
         and r.get("number", "").strip()
-        and not r.get("last_updated", "").strip()
+        and needs_update(r.get("last_updated", ""), max_age_days=max_age_days)
     ]
 
     print(f"Loaded {len(rows)} Funko entries from {csv_path} ({len(rows_to_scrape)} pending update)...")
 
     if not rows_to_scrape:
-        print("All entries already have 'last_updated' values. Nothing to scrape.")
+        print(f"All entries are up to date (updated within the last {max_age_days} days). Nothing to scrape.")
         return
 
     def _process_all(page_obj: Any | None = None, fetcher_fn: Callable[[str], str] | None = None) -> None:
@@ -519,7 +538,7 @@ def update_funkos_csv(
             kw_str = row.get("key_words", "").strip()
             last_updated = row.get("last_updated", "").strip()
 
-            if not name or not number or last_updated:
+            if not name or not number or not needs_update(last_updated, max_age_days=max_age_days):
                 continue
 
             scraped_count += 1
@@ -622,6 +641,7 @@ def main() -> None:
     parser.add_argument("--headless", action="store_true", help="Run browser in headless mode (default: headed)")
     parser.add_argument("--delay", type=float, default=2.0, help="Delay between requests in seconds (default: 2.0)")
     parser.add_argument("--profile-dir", type=str, default=None, help="Custom browser profile directory")
+    parser.add_argument("--max-age", type=int, default=30, help="Maximum age in days before re-scraping (default: 30)")
     args = parser.parse_args()
 
     input_path = args.csv or csv_file
@@ -633,6 +653,7 @@ def main() -> None:
         headless=args.headless,
         delay=args.delay,
         user_data_dir=args.profile_dir,
+        max_age_days=args.max_age,
     )
 
 

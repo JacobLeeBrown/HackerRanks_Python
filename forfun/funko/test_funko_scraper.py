@@ -3,7 +3,7 @@
 import os
 import tempfile
 import unittest
-from datetime import date
+from datetime import date, timedelta
 from unittest.mock import MagicMock, patch
 
 from funko_scraper import (
@@ -14,14 +14,12 @@ from funko_scraper import (
     fetch_ebay_page_html,
     is_challenge_present,
     is_valid_listing,
-    load_possible_keywords,
+    needs_update,
     parse_listings_from_html,
     parse_price,
     update_funkos_csv,
     OUTPUT_FIELDNAMES,
 )
-
-
 
 
 class TestFunkoScraper(unittest.TestCase):
@@ -287,6 +285,31 @@ class TestFunkoScraper(unittest.TestCase):
         mock_page.goto.assert_called_once_with("https://example.com/test", wait_until="domcontentloaded", timeout=5000)
         self.assertIn("<li class='s-item'>", html)
 
+    def test_needs_update(self):
+        fixed_today = date(2026, 9, 24)
+
+        # Missing or empty
+        self.assertTrue(needs_update("", today=fixed_today))
+        self.assertTrue(needs_update("   ", today=fixed_today))
+        self.assertTrue(needs_update(None, today=fixed_today))  # type: ignore
+
+        # Invalid format
+        self.assertTrue(needs_update("invalid-date", today=fixed_today))
+        self.assertTrue(needs_update("2026-13-45", today=fixed_today))
+
+        # Recent (<= 30 days) -> False
+        self.assertFalse(needs_update("2026-09-24", today=fixed_today))  # 0 days
+        self.assertFalse(needs_update("2026-09-14", today=fixed_today))  # 10 days
+        self.assertFalse(needs_update("2026-08-25", today=fixed_today))  # exactly 30 days
+
+        # Expired (> 30 days) -> True
+        self.assertTrue(needs_update("2026-08-24", today=fixed_today))  # 31 days
+        self.assertTrue(needs_update("2026-01-01", today=fixed_today))  # ~266 days
+
+        # Custom max_age_days
+        self.assertFalse(needs_update("2026-09-19", max_age_days=5, today=fixed_today))  # 5 days
+        self.assertTrue(needs_update("2026-09-18", max_age_days=5, today=fixed_today))   # 6 days
+
     def test_update_funkos_csv_in_place(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
             csv_path = os.path.join(tmp_dir, "funkos.csv")
@@ -295,10 +318,11 @@ class TestFunkoScraper(unittest.TestCase):
             with open(kw_path, "w", encoding="utf-8") as f:
                 f.write("glow\nsigned\nchase\n")
 
-            # Row 1 already updated, Row 2 needs update
+            today_str = date.today().isoformat()
+            # Row 1 already updated recently, Row 2 needs update
             initial_csv_content = (
                 "category,name,number,key_words,ebay_search_link,ebay_match_count,ebay_avg,last_updated\n"
-                "JJK,Satoru Gojo,1114,,https://example.com/existing,10,20.00,2026-01-01\n"
+                f"JJK,Satoru Gojo,1114,,https://example.com/existing,10,20.00,{today_str}\n"
                 "MHA,Himiko Toga,2159,,,,,\n"
             )
             with open(csv_path, "w", encoding="utf-8", newline="") as f:
@@ -318,7 +342,7 @@ class TestFunkoScraper(unittest.TestCase):
                 lines = f.read().splitlines()
                 self.assertEqual(lines[0], ",".join(OUTPUT_FIELDNAMES))
                 # Row 1 should be untouched
-                self.assertEqual(lines[1], "JJK,Satoru Gojo,1114,,https://example.com/existing,10,20.00,2026-01-01")
+                self.assertEqual(lines[1], f"JJK,Satoru Gojo,1114,,https://example.com/existing,10,20.00,{today_str}")
                 # Row 2 should be updated
                 self.assertIn("MHA,Himiko Toga,2159,", lines[2])
                 self.assertIn(",1,25,", lines[2])
@@ -332,9 +356,10 @@ class TestFunkoScraper(unittest.TestCase):
             with open(kw_path, "w", encoding="utf-8") as f:
                 f.write("glow\nsigned\nchase\n")
 
+            today_str = date.today().isoformat()
             content = (
                 "category,name,number,key_words,ebay_search_link,ebay_match_count,ebay_avg,last_updated\n"
-                "JJK,Satoru Gojo,1114,,https://example.com,10,20.00,2026-01-01\n"
+                f"JJK,Satoru Gojo,1114,,https://example.com,10,20.00,{today_str}\n"
             )
             with open(csv_path, "w", encoding="utf-8", newline="") as f:
                 f.write(content)
@@ -342,6 +367,45 @@ class TestFunkoScraper(unittest.TestCase):
             with patch("funko_scraper.fetch_ebay_html") as mock_fetch:
                 update_funkos_csv(csv_path, kw_path, dry_run=False, delay=0, use_browser=False)
                 mock_fetch.assert_not_called()
+
+    def test_update_funkos_csv_rescrape_expired_entries(self):
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            csv_path = os.path.join(tmp_dir, "funkos.csv")
+            kw_path = os.path.join(tmp_dir, "possible_key_words.txt")
+
+            with open(kw_path, "w", encoding="utf-8") as f:
+                f.write("glow\nsigned\nchase\n")
+
+            recent_date = (date.today() - timedelta(days=10)).isoformat()
+            expired_date = (date.today() - timedelta(days=35)).isoformat()
+
+            # Row 1 is recent (10 days old), Row 2 is expired (35 days old)
+            initial_csv_content = (
+                "category,name,number,key_words,ebay_search_link,ebay_match_count,ebay_avg,last_updated\n"
+                f"JJK,Satoru Gojo,1114,,https://example.com/gojo,10,20.00,{recent_date}\n"
+                f"MHA,Himiko Toga,2159,,https://example.com/toga,5,15.00,{expired_date}\n"
+            )
+            with open(csv_path, "w", encoding="utf-8", newline="") as f:
+                f.write(initial_csv_content)
+
+            sample_html = """
+            <li class="s-item">
+                <div class="s-item__title"><span>Funko Pop Himiko Toga 2159 Vinyl Figure</span></div>
+                <div class="s-item__details"><span class="s-item__price">$35.00</span></div>
+            </li>
+            """
+
+            with patch("funko_scraper.fetch_ebay_html", return_value=sample_html):
+                update_funkos_csv(csv_path, kw_path, dry_run=False, delay=0, use_browser=False, max_age_days=30)
+
+            with open(csv_path, "r", encoding="utf-8") as f:
+                lines = f.read().splitlines()
+                # Row 1 should be untouched (skipped because it's only 10 days old)
+                self.assertEqual(lines[1], f"JJK,Satoru Gojo,1114,,https://example.com/gojo,10,20.00,{recent_date}")
+                # Row 2 should be re-scraped and updated to today's date
+                self.assertIn("MHA,Himiko Toga,2159,", lines[2])
+                self.assertIn(",1,35,", lines[2])
+                self.assertTrue(lines[2].endswith(date.today().isoformat()))
 
     def test_update_funkos_csv_no_matches(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
