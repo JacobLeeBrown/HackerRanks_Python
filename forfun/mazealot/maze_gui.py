@@ -1,5 +1,5 @@
 from maze import Maze, WALL
-from maze_pieces import PIECE_SIZE, MazePiece, LEFT, UP, RIGHT, DOWN, OPEN
+from maze_pieces import PIECE_SIZE, MazePiece, LEFT, UP, RIGHT, DOWN, OPEN, DIR_VALS, X_MOD, Y_MOD
 import tkinter as tk
 import tk_helper as th
 
@@ -19,14 +19,21 @@ class MazeGui(object):
     TITLE = 'Maze 4 Dayz'
 
     KEY_MAPPINGS = {
-        'Left': (-1, 0),
-        'Right': (1, 0),
-        'Up': (0, -1),
-        'Down': (0, 1),
-        'a': (-1, 0),
-        'd': (1, 0),
-        'w': (0, -1),
-        's': (0, 1),
+        'Left': LEFT,
+        'Right': RIGHT,
+        'Up': UP,
+        'Down': DOWN,
+        'a': LEFT,
+        'd': RIGHT,
+        'w': UP,
+        's': DOWN,
+    }
+
+    DELTA_TO_DIR = {
+        (-1, 0): LEFT,
+        (0, -1): UP,
+        (1, 0): RIGHT,
+        (0, 1): DOWN,
     }
 
     def __init__(self, maze_: Maze, width_=10, height_=10,
@@ -205,22 +212,24 @@ class MazeGui(object):
         key = event.keysym
         if len(key) == 1:
             key = key.lower()
-        delta = self.KEY_MAPPINGS.get(key)
-        if delta is not None:
-            self.move_player(delta[0], delta[1])
+        direction = self.KEY_MAPPINGS.get(key)
+        if direction is not None:
+            self.move_player(direction)
 
-    def move_player(self, dx: int, dy: int) -> bool:
-        new_x = self.x_pos + dx
-        new_y = self.y_pos + dy
+    def move_player(self, direction_or_dx: int, dy: int = None) -> bool:
+        if dy is not None:
+            direction = self.DELTA_TO_DIR.get((direction_or_dx, dy))
+            if direction is None:
+                return False
+        else:
+            direction = direction_or_dx
 
-        new_x = max(0, min(new_x, self.maze.width - 1))
-        new_y = max(0, min(new_y, self.maze.height - 1))
-
-        if new_x == self.x_pos and new_y == self.y_pos:
+        if not self.maze.can_move(self.x_pos, self.y_pos, direction):
             return False
 
-        self.x_pos = new_x
-        self.y_pos = new_y
+        dv = DIR_VALS[direction]
+        self.x_pos += dv[X_MOD]
+        self.y_pos += dv[Y_MOD]
         self._draw_player()
         return True
 

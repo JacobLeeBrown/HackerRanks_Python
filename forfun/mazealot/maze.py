@@ -214,6 +214,13 @@ class Maze(object):
                     path_to_start
                 )
 
+    def can_move(self, x_idx: int, y_idx: int, direction: int) -> bool:
+        if not (0 <= x_idx < self.width and 0 <= y_idx < self.height):
+            return False
+        if direction not in DIR_VALS:
+            return False
+        return self._can_move_check(x_idx, y_idx, direction)
+
     def _can_move_check(self, x_idx: int, y_idx: int, direction: int) -> bool:
         cur_piece = MazePiece(self.grid[y_idx][x_idx])
         dv = DIR_VALS[direction]

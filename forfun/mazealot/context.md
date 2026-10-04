@@ -84,17 +84,17 @@ The generation sequence in [`Maze.generate_maze()`](file:///C:/dev/github/Hacker
 
 ## 6. Current State of Gameplay (Gap Analysis)
 
-The maze generation and player navigation are functional:
+The maze generation, player navigation, and collision detection are fully functional:
 - **Player Representation**: Rendered as a distinct accent-colored token (default red) on top of the maze using Tkinter canvas tags (`tag="player"`).
-- **Input Handling**: Keyboard events for Arrow keys (`Left`, `Right`, `Up`, `Down`) and ASDW keys (`a`/`A`, `s`/`S`, `d`/`D`, `w`/`W`) are bound to move the player and redraw the avatar instantly.
-- **Boundary Clamping**: The player is constrained within the $H \times W$ maze dimensions.
-- **Remaining Work (Collision & Win State)**:
-  - Movement is currently unconstrained by internal walls (free movement). Collision validation against open/closed piece boundaries is pending.
-  - Game state and win condition handling (detecting reaching `(end_x, end_y)`, victory UI, reset) is pending.
+- **Input Handling**: Keyboard events for Arrow keys (`Left`, `Right`, `Up`, `Down`) and ASDW keys (`a`/`A`, `s`/`S`, `d`/`D`, `w`/`W`) are bound to move the player and redraw the avatar smoothly.
+- **Collision Detection & Boundary Constraints**: Movement is strictly validated against walls and grid boundaries via [`Maze.can_move`](file:///C:/dev/github/HackerRanks_Python/forfun/mazealot/maze.py#L217-L223). Players cannot walk through closed walls or off the edge of the board.
+- **Remaining Work (Win State & Game Loop)**:
+  - Detecting when the player reaches the goal at `(end_x, end_y)`.
+  - Win UI / modal banner, moves or time tracking, and game reset or generating a new maze.
 
 ---
 
 ## 7. Verification & Testing
 
-- **[`maze_test.py`](file:///C:/dev/github/HackerRanks_Python/forfun/mazealot/maze_test.py)**: 7/7 tests passing. Verifies piece bitmasks, path modifications, binary micro-grid conversions, directional heuristics, reachability of 200 random mazes, and nub cleanup.
-- **[`maze_gui_test.py`](file:///C:/dev/github/HackerRanks_Python/forfun/mazealot/maze_gui_test.py)**: 7/7 tests passing. Verifies initial avatar placement, free movement via arrow keys and ASDW, boundary clamping at maze edges, and single-item canvas tag updates.
+- **[`maze_test.py`](file:///C:/dev/github/HackerRanks_Python/forfun/mazealot/maze_test.py)**: 8/8 tests passing. Verifies piece bitmasks, path modifications, binary micro-grid conversions, directional heuristics, reachability of 200 random mazes, nub cleanup, and `can_move` wall collision checks.
+- **[`maze_gui_test.py`](file:///C:/dev/github/HackerRanks_Python/forfun/mazealot/maze_gui_test.py)**: 8/8 tests passing. Verifies initial avatar placement, movement along open passages, rejection of moves against walls and grid limits, Arrow key and ASDW collision enforcement, and single-item canvas tag updates.

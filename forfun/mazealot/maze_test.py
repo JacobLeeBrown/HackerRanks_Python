@@ -135,6 +135,45 @@ class TestMaze(unittest.TestCase):
 
         self.assertEqual(0, fail_count)
 
+    def test_can_move(self):
+        m = Maze(3, 3, 0, 0, 2, 2)
+        # Setup specific pieces:
+        # (0, 0): piece 0 (all sides open)
+        # (1, 0): piece 0 (all sides open)
+        # (0, 1): piece 15 (all sides closed)
+        # (1, 1): piece 10 (1010 in binary: left=closed, up=open, right=closed, down=open)
+        #
+        #  X . X X . X
+        #  . . . . . .
+        #  X . X X . X
+        #  X X X X . X
+        #  X . X X . X
+        #  X X X X . X
+        #
+        m.grid[0][0] = 0
+        m.grid[0][1] = 0
+        m.grid[1][0] = 15
+        m.grid[1][1] = 10
+
+        # Boundary checks from (0, 0)
+        self.assertFalse(m.can_move(0, 0, LEFT))
+        self.assertFalse(m.can_move(0, 0, UP))
+
+        # Open passage between (0, 0) and (1, 0)
+        self.assertTrue(m.can_move(0, 0, RIGHT))
+        self.assertTrue(m.can_move(1, 0, LEFT))
+
+        # Wall collision: (0, 0) is open DOWN, but (0, 1) is closed UP (piece 15)
+        self.assertFalse(m.can_move(0, 0, DOWN))
+        self.assertFalse(m.can_move(0, 1, UP))
+
+        # Out-of-bounds coordinates
+        self.assertFalse(m.can_move(-1, 0, RIGHT))
+        self.assertFalse(m.can_move(0, 3, DOWN))
+
+        # Invalid direction
+        self.assertFalse(m.can_move(0, 0, 99))
+
     @staticmethod
     def _check_for_nubs(m: Maze) -> bool:
         for y_idx, row in enumerate(m.grid):
