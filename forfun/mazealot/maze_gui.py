@@ -18,6 +18,17 @@ class MazeGui(object):
 
     TITLE = 'Maze 4 Dayz'
 
+    KEY_MAPPINGS = {
+        'Left': (-1, 0),
+        'Right': (1, 0),
+        'Up': (0, -1),
+        'Down': (0, 1),
+        'a': (-1, 0),
+        'd': (1, 0),
+        'w': (0, -1),
+        's': (0, 1),
+    }
+
     def __init__(self, maze_: Maze, width_=10, height_=10,
                  start_x_=0, start_y_=0, end_x_=9, end_y_=9,
                  path_color_=WHITE,
@@ -81,6 +92,8 @@ class MazeGui(object):
         self.canvas.pack()
         # self._draw_maze_orig()
         self._draw_maze()
+        self._draw_player()
+        self.root.bind("<Key>", self._handle_key_press)
 
     def play(self):
         self.root.mainloop()
@@ -170,13 +183,46 @@ class MazeGui(object):
                                ref_y + c_size,
                                fill=self.path_color, width=0)
 
-    def _draw_marker(self, x_idx, y_idx, color):
+    def _draw_marker(self, x_idx, y_idx, color, tag=None):
         ref_x = x_idx * GRID_PIXEL_SIZE + (PX_DIFF / 2)
         ref_y = y_idx * GRID_PIXEL_SIZE + (PX_DIFF / 2)
-        self.canvas.create_oval(ref_x, ref_y,
-                                ref_x + MARKER_PIXEL_SIZE,
-                                ref_y + MARKER_PIXEL_SIZE,
-                                fill=color)
+        opts = {'fill': color}
+        if tag is not None:
+            opts['tags'] = tag
+        return self.canvas.create_oval(ref_x, ref_y,
+                                       ref_x + MARKER_PIXEL_SIZE,
+                                       ref_y + MARKER_PIXEL_SIZE,
+                                       **opts)
+
+    def _draw_player(self):
+        self.canvas.delete('player')
+        self._draw_marker(self.x_pos * PIECE_SIZE + 1,
+                          self.y_pos * PIECE_SIZE + 1,
+                          self.accent_color,
+                          tag='player')
+
+    def _handle_key_press(self, event):
+        key = event.keysym
+        if len(key) == 1:
+            key = key.lower()
+        delta = self.KEY_MAPPINGS.get(key)
+        if delta is not None:
+            self.move_player(delta[0], delta[1])
+
+    def move_player(self, dx: int, dy: int) -> bool:
+        new_x = self.x_pos + dx
+        new_y = self.y_pos + dy
+
+        new_x = max(0, min(new_x, self.maze.width - 1))
+        new_y = max(0, min(new_y, self.maze.height - 1))
+
+        if new_x == self.x_pos and new_y == self.y_pos:
+            return False
+
+        self.x_pos = new_x
+        self.y_pos = new_y
+        self._draw_player()
+        return True
 
 
 # Example Tkinter code:

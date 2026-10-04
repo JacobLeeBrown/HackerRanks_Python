@@ -16,6 +16,7 @@ The primary goal of **Mazealot** is to randomly generate 2D mazes and provide an
 | [`tk_helper.py`](file:///C:/dev/github/HackerRanks_Python/forfun/mazealot/tk_helper.py) | Helper utility containing [`rect`](file:///C:/dev/github/HackerRanks_Python/forfun/mazealot/tk_helper.py#L4-L5) for drawing filled and outlined rectangles without coordinate offset mismatches on `tkinter.Canvas`. |
 | [`play_maze.py`](file:///C:/dev/github/HackerRanks_Python/forfun/mazealot/play_maze.py) | Main launcher script with test/debug functions ([`basic_maze`](file:///C:/dev/github/HackerRanks_Python/forfun/mazealot/play_maze.py#L5-L13), [`debug_with_gui`](file:///C:/dev/github/HackerRanks_Python/forfun/mazealot/play_maze.py#L15-L29), [`test_canvas`](file:///C:/dev/github/HackerRanks_Python/forfun/mazealot/play_maze.py#L31-L79)). |
 | [`maze_test.py`](file:///C:/dev/github/HackerRanks_Python/forfun/mazealot/maze_test.py) | Comprehensive `unittest` suite covering [`MazePiece`](file:///C:/dev/github/HackerRanks_Python/forfun/mazealot/maze_pieces.py#L93-L130) operations, directional resolution towards start, playability/reachability across 200 random mazes, and nub cleanup. |
+| [`maze_gui_test.py`](file:///C:/dev/github/HackerRanks_Python/forfun/mazealot/maze_gui_test.py) | `unittest` suite covering GUI player initialization, keyboard bindings (Arrow keys + ASDW), boundary clamping, and tag-based canvas redraws. |
 
 ---
 
@@ -83,15 +84,17 @@ The generation sequence in [`Maze.generate_maze()`](file:///C:/dev/github/Hacker
 
 ## 6. Current State of Gameplay (Gap Analysis)
 
-Although mazes generate reliably and pass all unit tests, **the game is not yet playable**:
-- **Player Representation**: While [`MazeGui`](file:///C:/dev/github/HackerRanks_Python/forfun/mazealot/maze_gui.py#L17-L180) tracks `self.x_pos` and `self.y_pos`, there is no distinct player token drawn on top of the maze.
-- **Input Handling**: There are no event bindings (`<Up>`, `<Down>`, `<Left>`, `<Right>`, `<Key-w>`, etc.) attached to the window or canvas.
-- **Collision & Movement Validation**: No functions exist to test whether a player can step from their current position into an adjacent cell based on the open/closed boundaries.
-- **Game State & Win Condition**: No victory triggers when the player coordinates match `(end_x, end_y)`, nor any UI feedback (e.g., win banner, moves counter, timer, reset/new maze button).
+The maze generation and player navigation are functional:
+- **Player Representation**: Rendered as a distinct accent-colored token (default red) on top of the maze using Tkinter canvas tags (`tag="player"`).
+- **Input Handling**: Keyboard events for Arrow keys (`Left`, `Right`, `Up`, `Down`) and ASDW keys (`a`/`A`, `s`/`S`, `d`/`D`, `w`/`W`) are bound to move the player and redraw the avatar instantly.
+- **Boundary Clamping**: The player is constrained within the $H \times W$ maze dimensions.
+- **Remaining Work (Collision & Win State)**:
+  - Movement is currently unconstrained by internal walls (free movement). Collision validation against open/closed piece boundaries is pending.
+  - Game state and win condition handling (detecting reaching `(end_x, end_y)`, victory UI, reset) is pending.
 
 ---
 
 ## 7. Verification & Testing
 
-- Unit tests in [`maze_test.py`](file:///C:/dev/github/HackerRanks_Python/forfun/mazealot/maze_test.py) execute cleanly (7/7 passing).
-- Tests verify piece transformations, path opening/closing, binary grid conversion, directional heuristics towards start, full reachability across 200 random mazes of varying dimensions, and lack of disconnected nubs.
+- **[`maze_test.py`](file:///C:/dev/github/HackerRanks_Python/forfun/mazealot/maze_test.py)**: 7/7 tests passing. Verifies piece bitmasks, path modifications, binary micro-grid conversions, directional heuristics, reachability of 200 random mazes, and nub cleanup.
+- **[`maze_gui_test.py`](file:///C:/dev/github/HackerRanks_Python/forfun/mazealot/maze_gui_test.py)**: 7/7 tests passing. Verifies initial avatar placement, free movement via arrow keys and ASDW, boundary clamping at maze edges, and single-item canvas tag updates.
