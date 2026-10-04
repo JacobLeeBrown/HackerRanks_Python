@@ -123,7 +123,6 @@ class MazeGui(object):
                                        (i + 1) * GRID_PIXEL_SIZE, (j + 1) * GRID_PIXEL_SIZE,
                                        fill=self.wall_color, width=0)
 
-        self._draw_marker(self.maze.start_x * PIECE_SIZE + 1, self.maze.start_y * PIECE_SIZE + 1, BLUE)
         self._draw_marker(self.maze.end_x * PIECE_SIZE + 1, self.maze.end_y * PIECE_SIZE + 1, GREEN)
 
     # For each element of self.maze.grid, get the associated 3x3 binary matrix
