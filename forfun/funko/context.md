@@ -22,11 +22,13 @@ Columns set manually will be:
 Given these values, the tool modifies `funkos.csv` in-place, filling in:
 - `ebay_search_link`: The search URL used for the Funko on eBay.
 - `ebay_match_count`: The number of sold listings matching the exact Funko.
-- `ebay_avg`: The average USD value of matching sold listings, or `--` if no matches are found.
+- `ebay_avg`: The average USD value of matching sold listings, or `--` if no 
+    matches are found.
 - `last_updated`: The date (YYYY-MM-DD) when the row was populated.
 
 The tool scrapes rows that either lack a `last_updated` value or have a
-`last_updated` date older than 30 days, skipping rows updated within the last 30 days.
+`last_updated` date older than 30 days, skipping rows updated within the last 30 
+days.
 Concerning `key_words`, it's just as important to understanding what key-words
 are *not* provided. To support this, I've included `possible_key_words.txt` in
 this directory (Note: the list is not exhaustive, but covers the most common

@@ -130,16 +130,16 @@ class MazeGui(object):
         # assert (center_size % 2) == 0, f'Can\'t draw center, sizing values aren\'t nice! '
         #                                f'c_size = {c_size}, path_weight = {path_weight}'
         center_offset = int((c_size - center_size) / 2)
-        th.rect(c, ref_x + center_offset, ref_y * center_offset,
+        th.rect(c, ref_x + center_offset, ref_y + center_offset,
                 ref_x + center_offset + center_size,
                 ref_y + center_offset + center_size,
                 self.path_color)
 
         # Now need to "open" up applicable sides
-        # sides = MazePiece(piece_id).open_sides
-        # for i, d in enumerate(sides):
-        #     if d == OPEN:
-        #         self._draw_maze_piece_open_side(c, ref_x, ref_y, c_size, i, path_weight)
+        sides = MazePiece(piece_id).open_sides
+        for i, d in enumerate(sides):
+            if d == OPEN:
+                self._draw_maze_piece_open_side(c, ref_x, ref_y, c_size, i, path_weight)
 
     def _draw_maze_piece_open_side(self, c: tk.Canvas, ref_x: int, ref_y: int, c_size: int,
                                    direction: int, path_weight=0.8):
