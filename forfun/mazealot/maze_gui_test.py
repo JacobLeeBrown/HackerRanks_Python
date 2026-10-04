@@ -132,6 +132,65 @@ class TestMazeGui(unittest.TestCase):
         player_items = self.gui.canvas.find_withtag('player')
         self.assertEqual(len(player_items), 1)
 
+    def test_is_completed(self):
+        # Initially at (0, 0), not at end (2, 2)
+        self.assertFalse(self.gui.is_completed())
+
+        # Move to end coordinates
+        self.gui.x_pos = self.maze.end_x
+        self.gui.y_pos = self.maze.end_y
+        self.assertTrue(self.gui.is_completed())
+
+    def test_reset_maze_generates_new_maze_and_resets_player(self):
+        orig_maze = self.gui.maze
+        self.assertEqual(self.gui.completed_count, 0)
+
+        # Move player away from start
+        self.gui.x_pos = 1
+        self.gui.y_pos = 1
+
+        self.gui.reset_maze()
+
+        self.assertEqual(self.gui.completed_count, 1)
+        self.assertEqual(self.gui.x_pos, self.gui.maze.start_x)
+        self.assertEqual(self.gui.y_pos, self.gui.maze.start_y)
+        self.assertEqual(self.gui.maze.width, orig_maze.width)
+        self.assertEqual(self.gui.maze.height, orig_maze.height)
+        self.assertIsNot(self.gui.maze, orig_maze)
+        player_items = self.gui.canvas.find_withtag('player')
+        self.assertEqual(len(player_items), 1)
+
+    def test_reaching_end_cell_triggers_reset(self):
+        # Setup maze where end is along the top edge: (0, 0) -> (1, 0) -> (2, 0)
+        end_maze = Maze(3, 3, 0, 0, 2, 0)
+        end_maze.grid = [
+            [0, 0, 0],
+            [15, 15, 15],
+            [15, 15, 15]
+        ]
+        gui = MazeGui(end_maze)
+        try:
+            self.assertEqual(gui.completed_count, 0)
+            self.assertEqual((gui.x_pos, gui.y_pos), (0, 0))
+
+            # Move right to (1, 0) - not yet completed
+            moved = gui.move_player(RIGHT)
+            self.assertTrue(moved)
+            self.assertEqual(gui.completed_count, 0)
+            self.assertEqual((gui.x_pos, gui.y_pos), (1, 0))
+
+            # Move right to (2, 0) which is end_x, end_y
+            moved = gui.move_player(RIGHT)
+            self.assertTrue(moved)
+
+            # Reaching end cell should automatically increment completed_count and reset player to start
+            self.assertEqual(gui.completed_count, 1)
+            self.assertEqual((gui.x_pos, gui.y_pos), (gui.maze.start_x, gui.maze.start_y))
+            self.assertEqual(gui.maze.width, 3)
+            self.assertEqual(gui.maze.height, 3)
+        finally:
+            gui.root.destroy()
+
 
 if __name__ == '__main__':
     unittest.main()

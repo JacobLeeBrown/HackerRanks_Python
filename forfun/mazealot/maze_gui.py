@@ -84,6 +84,7 @@ class MazeGui(object):
 
         self.x_pos = self.maze.start_x
         self.y_pos = self.maze.start_y
+        self.completed_count = 0
 
         self.width = self.maze.width * PIECE_SIZE * GRID_PIXEL_SIZE
         self.height = self.maze.height * PIECE_SIZE * GRID_PIXEL_SIZE
@@ -135,7 +136,6 @@ class MazeGui(object):
             for i, cell in enumerate(row):
                 self._draw_maze_piece(c, i, j, GRID_PIXEL_SIZE * PIECE_SIZE, cell)
 
-        self._draw_marker(self.maze.start_x * PIECE_SIZE + 1, self.maze.start_y * PIECE_SIZE + 1, BLUE)
         self._draw_marker(self.maze.end_x * PIECE_SIZE + 1, self.maze.end_y * PIECE_SIZE + 1, GREEN)
 
     def _draw_maze_piece(self, c: tk.Canvas, cx: int, cy: int, c_size: int, piece_id: int,
@@ -215,6 +215,26 @@ class MazeGui(object):
         if direction is not None:
             self.move_player(direction)
 
+    def is_completed(self) -> bool:
+        return self.x_pos == self.maze.end_x and self.y_pos == self.maze.end_y
+
+    def reset_maze(self, new_maze: Maze = None):
+        self.completed_count += 1
+        if new_maze is not None:
+            self.maze = new_maze
+        else:
+            self.maze = Maze(self.maze.width, self.maze.height,
+                             self.maze.start_x, self.maze.start_y,
+                             self.maze.end_x, self.maze.end_y)
+            self.maze.generate_maze()
+
+        self.x_pos = self.maze.start_x
+        self.y_pos = self.maze.start_y
+
+        self.canvas.delete("all")
+        self._draw_maze()
+        self._draw_player()
+
     def move_player(self, direction_or_dx: int, dy: int = None) -> bool:
         if dy is not None:
             direction = self.DELTA_TO_DIR.get((direction_or_dx, dy))
@@ -230,6 +250,10 @@ class MazeGui(object):
         self.x_pos += dv[X_MOD]
         self.y_pos += dv[Y_MOD]
         self._draw_player()
+
+        if self.is_completed():
+            self.reset_maze()
+
         return True
 
 
