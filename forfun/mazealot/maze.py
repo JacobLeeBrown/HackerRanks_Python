@@ -105,11 +105,17 @@ class Maze(object):
         print(''.join('#' for _ in range(width + 2)))
 
     def _make_playable(self):
-        path_to_start = self._init_path_to_start()
+        self._connect_to_start()
+        # self._single_path() # TODO: Fix this
 
+    # ~~~~ Begin: Connect to Start ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    def _connect_to_start(self):
         # To improve general maze generation, rather than iterate through all
         # cells in a start-to-end fashion, randomly pick cells to connect to
         # the start
+        path_to_start = self._init_path_to_start()
+
         coords = []
         for y_ in range(self.height):
             for x_ in range(self.width):
@@ -120,10 +126,10 @@ class Maze(object):
             x_pos, y_pos = coords.pop(rand_idx)
             if not path_to_start[y_pos][x_pos]:
                 traversed = [[False for _ in range(self.width)] for _ in range(self.height)]
-                self._connect_to_start(x_pos, y_pos, path_to_start, traversed)
+                self._connect_to_start_r(x_pos, y_pos, path_to_start, traversed)
 
-    def _connect_to_start(self, x_idx: int, y_idx: int,
-                          path_to_start, traversed):
+    def _connect_to_start_r(self, x_idx: int, y_idx: int,
+                            path_to_start, traversed):
         cur_val = MazePiece(self.grid[y_idx][x_idx])
         # No matter what, this piece will connect to start after code executes
         path_to_start[y_idx][x_idx] = True
@@ -146,7 +152,7 @@ class Maze(object):
         next_val = MazePiece(self.grid[y_idx + dv[Y_MOD]][x_idx + dv[X_MOD]])
         self.grid[y_idx][x_idx] = cur_val.open_path(dir_to_start)
         self.grid[y_idx + dv[Y_MOD]][x_idx + dv[X_MOD]] = next_val.open_path(dv[OPPOSITE])
-        self._connect_to_start(x_idx + dv[X_MOD], y_idx + dv[Y_MOD], path_to_start, traversed)
+        self._connect_to_start_r(x_idx + dv[X_MOD], y_idx + dv[Y_MOD], path_to_start, traversed)
 
     def _connect_to_start_check(self, x_idx: int, y_idx: int,
                                 direction: int, path_to_start,
@@ -213,6 +219,42 @@ class Maze(object):
                     y_idx + dv[Y_MOD],
                     path_to_start
                 )
+
+    # ~~~~ End: Connect to Start ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    # ~~~~ Begin: Single Path ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    def _single_path(self):
+        # Randomly DFS through the maze, closing any paths already traversed
+        traversed = [[False for _ in range(self.width)] for _ in range(self.height)]
+        x_idx = self.start_x
+        y_idx = self.start_y
+        traversed[y_idx][x_idx] = True
+
+        for d in (RIGHT, DOWN):
+            dv = DIR_VALS[d]
+            if self.can_move(x_idx, y_idx, d):
+                self._single_path_r(self.start_x + dv[X_MOD], self.start_y + dv[Y_MOD],
+                                    d, traversed)
+
+    def _single_path_r(self, x_idx: int, y_idx: int, from_dir: int, traversed):
+        # Get random list of directions to traverse
+        cur_val = MazePiece(self.grid[y_idx][x_idx])
+        traversed[y_idx][x_idx] = True
+        shuffled_dirs = random.sample(list(DIRS), k=len(DIRS))
+        for d in shuffled_dirs:
+            dv = DIR_VALS[d]
+            # Don't try to go backwards; "Keep moving forward"
+            if from_dir is not dv[OPPOSITE] and self.can_move(x_idx, y_idx, d):
+                if traversed[x_idx + dv[X_MOD]][y_idx + dv[Y_MOD]]:
+                    # We can get to the cell from the start in a different way
+                    # -> Build a wall
+                    self.grid[y_idx][x_idx] = cur_val.close_path(d)
+                else:
+                    self._single_path_r(x_idx + dv[X_MOD], y_idx + dv[Y_MOD],
+                                        d, traversed)
+
+    # ~~~~ End: Single Path ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     def can_move(self, x_idx: int, y_idx: int, direction: int) -> bool:
         if not (0 <= x_idx < self.width and 0 <= y_idx < self.height):
