@@ -14,8 +14,9 @@ dark.
 The input to this tool is a CSV in the same directory, titled "funkos.csv".
 Columns set manually will be:
 - category = Arbitrary grouping for human search
-- name = The primary identifier for the Funko, as it appears on its box.
-- number = The secondary identifier, also as it appears on its box.
+- search_name = The primary name identifier used for eBay queries and validation
+- name = Optional box name, populated only when the box text differs from search_name
+- number = The secondary identifier, as it appears on its box
 - key_words = A double-quoted, comma-delimited list of tertiary identifiers to
     differentiate special versions.
 

@@ -29,6 +29,7 @@ except ImportError:
 
 OUTPUT_FIELDNAMES = [
     "category",
+    "search_name",
     "name",
     "number",
     "key_words",
@@ -518,7 +519,7 @@ def update_funkos_csv(
 
     rows_to_scrape = [
         r for r in rows
-        if r.get("name", "").strip()
+        if (r.get("search_name", "").strip() or r.get("name", "").strip())
         and r.get("number", "").strip()
         and needs_update(r.get("last_updated", ""), max_age_days=max_age_days)
     ]
@@ -533,27 +534,27 @@ def update_funkos_csv(
         today_str = date.today().isoformat()
         scraped_count = 0
         for row in rows:
-            name = row.get("name", "").strip()
+            search_name = (row.get("search_name") or row.get("name") or "").strip()
             number = row.get("number", "").strip()
             kw_str = row.get("key_words", "").strip()
             last_updated = row.get("last_updated", "").strip()
 
-            if not name or not number or not needs_update(last_updated, max_age_days=max_age_days):
+            if not search_name or not number or not needs_update(last_updated, max_age_days=max_age_days):
                 continue
 
             scraped_count += 1
-            status_line = f"[{scraped_count}/{len(rows_to_scrape)}] Scraping: {name} #{number} (keywords: '{kw_str}')"
+            status_line = f"[{scraped_count}/{len(rows_to_scrape)}] Scraping: {search_name} #{number} (keywords: '{kw_str}')"
             print(f"\n{status_line}")
 
             search_url = build_ebay_sold_url(
-                name, number, [k.strip() for k in kw_str.split(",") if k.strip()]
+                search_name, number, [k.strip() for k in kw_str.split(",") if k.strip()]
             )
             match_count = 0
             avg_formatted = "--"
 
             try:
                 url, avg_price, matched = scrape_funko_average(
-                    name=name,
+                    name=search_name,
                     number=number,
                     key_words_str=kw_str,
                     all_possible_keywords=all_possible_keywords,
