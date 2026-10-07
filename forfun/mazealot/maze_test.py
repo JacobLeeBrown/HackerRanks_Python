@@ -1,3 +1,4 @@
+from collections import deque
 import unittest
 
 from maze import Maze
@@ -173,6 +174,42 @@ class TestMaze(unittest.TestCase):
 
         # Invalid direction
         self.assertFalse(m.can_move(0, 0, 99))
+
+    def test_single_path_to_start(self):
+        # Generate a few mazes (both 10x10 and 20x20) and validate using BFS
+        # that every cell in the maze has exactly 1 path to the start.
+        for size in (10, 20):
+            for _ in range(5):
+                m = Maze(size, size, 0, 0, size - 1, size - 1)
+                m.generate_maze()
+                self._validate_single_path_bfs(m)
+
+    def _validate_single_path_bfs(self, m: Maze):
+        queue = deque([(m.start_x, m.start_y, None)])
+        visited = {(m.start_x, m.start_y): None}
+
+        while queue:
+            cx, cy, parent = queue.popleft()
+            for d in DIRS:
+                if m.can_move(cx, cy, d):
+                    dv = DIR_VALS[d]
+                    nx, ny = cx + dv[X_MOD], cy + dv[Y_MOD]
+                    if (nx, ny) == parent:
+                        continue
+                    # In an undirected graph, reaching an already visited node
+                    # indicates a cycle (multiple paths between start and that cell).
+                    self.assertNotIn(
+                        (nx, ny), visited,
+                        f"Multiple paths found to ({nx}, {ny}) from ({cx}, {cy}) and {visited.get((nx, ny))}"
+                    )
+                    visited[(nx, ny)] = (cx, cy)
+                    queue.append((nx, ny, (cx, cy)))
+
+        total_cells = m.width * m.height
+        self.assertEqual(
+            len(visited), total_cells,
+            f"Not all cells are connected to start: visited {len(visited)} / {total_cells}"
+        )
 
     @staticmethod
     def _check_for_nubs(m: Maze) -> bool:

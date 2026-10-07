@@ -106,7 +106,7 @@ class Maze(object):
 
     def _make_playable(self):
         self._connect_to_start()
-        # self._single_path() # TODO: Fix this
+        self._single_path()
 
     # ~~~~ Begin: Connect to Start ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -224,35 +224,30 @@ class Maze(object):
 
     # ~~~~ Begin: Single Path ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+    # From the start, randomly DFS through the maze, closing any paths already
+    # traversed
     def _single_path(self):
-        # Randomly DFS through the maze, closing any paths already traversed
         traversed = [[False for _ in range(self.width)] for _ in range(self.height)]
-        x_idx = self.start_x
-        y_idx = self.start_y
-        traversed[y_idx][x_idx] = True
-
-        for d in (RIGHT, DOWN):
-            dv = DIR_VALS[d]
-            if self.can_move(x_idx, y_idx, d):
-                self._single_path_r(self.start_x + dv[X_MOD], self.start_y + dv[Y_MOD],
-                                    d, traversed)
+        self._single_path_r(self.start_x, self.start_y, -1, traversed)
 
     def _single_path_r(self, x_idx: int, y_idx: int, from_dir: int, traversed):
         # Get random list of directions to traverse
-        cur_val = MazePiece(self.grid[y_idx][x_idx])
         traversed[y_idx][x_idx] = True
         shuffled_dirs = random.sample(list(DIRS), k=len(DIRS))
         for d in shuffled_dirs:
             dv = DIR_VALS[d]
             # Don't try to go backwards; "Keep moving forward"
             if from_dir is not dv[OPPOSITE] and self.can_move(x_idx, y_idx, d):
-                if traversed[x_idx + dv[X_MOD]][y_idx + dv[Y_MOD]]:
+                nx, ny = x_idx + dv[X_MOD], y_idx + dv[Y_MOD]
+                if traversed[ny][nx]:
                     # We can get to the cell from the start in a different way
-                    # -> Build a wall
+                    # -> Build a wall between both cells
+                    cur_val = MazePiece(self.grid[y_idx][x_idx])
+                    neighbor_val = MazePiece(self.grid[ny][nx])
                     self.grid[y_idx][x_idx] = cur_val.close_path(d)
+                    self.grid[ny][nx] = neighbor_val.close_path(dv[OPPOSITE])
                 else:
-                    self._single_path_r(x_idx + dv[X_MOD], y_idx + dv[Y_MOD],
-                                        d, traversed)
+                    self._single_path_r(nx, ny, d, traversed)
 
     # ~~~~ End: Single Path ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

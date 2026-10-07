@@ -99,5 +99,5 @@ The maze generation, player navigation, collision detection, and completion loop
 
 ## 7. Verification & Testing
 
-- **[`maze_test.py`](file:///C:/dev/github/HackerRanks_Python/forfun/mazealot/maze_test.py)**: 8/8 tests passing. Verifies piece bitmasks, path modifications, binary micro-grid conversions, directional heuristics, reachability of 200 random mazes, nub cleanup, and `can_move` wall collision checks.
+- **[`maze_test.py`](file:///C:/dev/github/HackerRanks_Python/forfun/mazealot/maze_test.py)**: 9/9 tests passing. Verifies piece bitmasks, path modifications, binary micro-grid conversions, directional heuristics, reachability of 200 random mazes, nub cleanup, `can_move` wall collision checks, and BFS validation that every cell has exactly 1 path to start (spanning tree).
 - **[`maze_gui_test.py`](file:///C:/dev/github/HackerRanks_Python/forfun/mazealot/maze_gui_test.py)**: 11/11 tests passing. Verifies initial avatar placement, movement along open passages, rejection of moves against walls and grid limits, Arrow key and ASDW collision enforcement, single-item canvas tag updates, end-cell completion detection, maze auto-regeneration, and state reset.
