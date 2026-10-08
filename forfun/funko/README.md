@@ -133,10 +133,68 @@ If eBay detects automated traffic, the terminal will notify you:
 
 ---
 
-## Running Tests
+## Funko Stats Reporter (`funko_stats.py`)
 
-Unit tests mock network requests and verify URL formatting, keyword matching, price calculations, and CSV parsing:
+A companion analysis tool that reads any Funko CSV and reports key summary metrics to the console based on the `ebay_avg` column:
+
+- **Total Collection Value**: Sum of all priced Funkos.
+- **Average Funko Value**: Mean market value across all priced Funkos.
+- **Highest Valued Funko(s)**: Displays name, figure number, category, keywords, and price (handles ties).
+- **Lowest Valued Funko(s)**: Displays name, figure number, category, keywords, and price (handles ties).
+- **Pricing Status Counts**: Total Funkos, count priced, and count unpriced/pending.
+
+### Usage
 
 ```powershell
-python -m unittest test_funko_scraper.py
+# Analyze default funkos.csv
+python funko_stats.py
+
+# Analyze a specific CSV
+python funko_stats.py my_funkos.csv
+
+# Or use the --csv flag
+python funko_stats.py --csv my_funkos.csv
 ```
+
+### Sample Output
+
+```text
+=======================================================
+           FUNKO POP STATISTICS REPORT
+=======================================================
+File: my_funkos.csv
+
+Total Funkos:            12
+  - Priced:              12
+  - Unpriced / Pending:  0
+
+-------------------------------------------------------
+Total Collection Value:  $161.40
+Average Funko Value:     $13.45
+-------------------------------------------------------
+
+Highest Valued Funko ($37.66):
+  * Maki Zen'in #1373 (JJK)
+
+Lowest Valued Funko ($5.82):
+  * Inasa Yoarashi #1145 (MHA)
+=======================================================
+```
+
+---
+
+## Running Tests
+
+Run the test suites for both the scraper and stats reporter:
+
+```powershell
+# Run scraper tests
+python -m unittest test_funko_scraper.py
+
+# Run stats reporter tests
+python -m unittest test_funko_stats.py
+
+# Or run all tests together
+python -m unittest discover
+```
+
