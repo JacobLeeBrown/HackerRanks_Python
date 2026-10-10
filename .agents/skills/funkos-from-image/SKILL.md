@@ -24,7 +24,7 @@ Before analyzing the image, check the target output file path:
 1. **New or Empty File**:
    If the output file does not exist or has a file size of 0 bytes, initialize it with the standard 9-column Funko header:
    ```csv
-   category,search_name,name,number,key_words,ebay_search_link,ebay_match_count,ebay_avg,last_updated
+   category,search_name,name,number,key_words,ebay_avg,ebay_match_count,last_updated,ebay_search_link
    ```
 2. **Existing File**:
    If the output file already exists, verify that it has an acceptable Funko schema. It must contain at minimum:

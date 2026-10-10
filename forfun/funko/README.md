@@ -34,7 +34,7 @@ An automated scraper that queries eBay's completed and sold listings to calculat
 The scraper operates on CSV files following this 9-column schema:
 
 ```csv
-category,search_name,name,number,key_words,ebay_search_link,ebay_match_count,ebay_avg,last_updated
+category,search_name,name,number,key_words,ebay_avg,ebay_match_count,last_updated,ebay_search_link
 ```
 
 ### Manual Input Columns
@@ -58,10 +58,10 @@ Leave these blank when adding new rows. The scraper populates them automatically
 
 | Column | Description |
 | :--- | :--- |
-| `ebay_search_link` | The exact URL used to fetch eBay sold listings. |
-| `ebay_match_count` | The number of valid sold listings matched after filtering. |
 | `ebay_avg` | The average USD sold price, or `--` if no valid listings were found. |
+| `ebay_match_count` | The number of valid sold listings matched after filtering. |
 | `last_updated` | The date (`YYYY-MM-DD`) when the entry was scraped. |
+| `ebay_search_link` | The exact URL used to fetch eBay sold listings. |
 
 ---
 

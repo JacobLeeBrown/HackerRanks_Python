@@ -33,10 +33,10 @@ OUTPUT_FIELDNAMES = [
     "name",
     "number",
     "key_words",
-    "ebay_search_link",
-    "ebay_match_count",
     "ebay_avg",
+    "ebay_match_count",
     "last_updated",
+    "ebay_search_link",
 ]
 
 
@@ -510,8 +510,9 @@ def update_funkos_csv(
     rows: list[dict[str, str]] = []
     with open(csv_path, "r", encoding="utf-8-sig", newline="") as f:
         reader = csv.DictReader(f)
-        fieldnames = list(reader.fieldnames or [])
-        for col in OUTPUT_FIELDNAMES:
+        reader_fieldnames = list(reader.fieldnames or [])
+        fieldnames = list(OUTPUT_FIELDNAMES)
+        for col in reader_fieldnames:
             if col not in fieldnames:
                 fieldnames.append(col)
         for r in reader:

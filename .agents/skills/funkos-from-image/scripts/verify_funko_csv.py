@@ -13,10 +13,10 @@ STANDARD_FIELDNAMES = [
     "name",
     "number",
     "key_words",
-    "ebay_search_link",
-    "ebay_match_count",
     "ebay_avg",
+    "ebay_match_count",
     "last_updated",
+    "ebay_search_link",
 ]
 
 REQUIRED_COLUMNS = ["category", "number", "key_words"]

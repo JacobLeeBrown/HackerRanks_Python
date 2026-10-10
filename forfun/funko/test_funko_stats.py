@@ -229,8 +229,8 @@ class TestLoadCsvAndMain(unittest.TestCase):
         from funko_stats import main
 
         with tempfile.NamedTemporaryFile("w", delete=False, suffix=".csv") as tmp:
-            tmp.write("category,search_name,name,number,key_words,ebay_search_link,ebay_match_count,ebay_avg,last_updated\n")
-            tmp.write("JJK,Gojo,,1114,,,1,15.50,2026-09-13\n")
+            tmp.write("category,search_name,name,number,key_words,ebay_avg,ebay_match_count,last_updated,ebay_search_link\n")
+            tmp.write("JJK,Gojo,,1114,,15.50,1,2026-09-13,\n")
             tmp_path = tmp.name
 
         try:

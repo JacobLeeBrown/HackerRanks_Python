@@ -321,8 +321,8 @@ class TestFunkoScraper(unittest.TestCase):
             today_str = date.today().isoformat()
             # Row 1 already updated recently, Row 2 needs update
             initial_csv_content = (
-                "category,search_name,name,number,key_words,ebay_search_link,ebay_match_count,ebay_avg,last_updated\n"
-                f"JJK,Satoru Gojo,,1114,,https://example.com/existing,10,20.00,{today_str}\n"
+                "category,search_name,name,number,key_words,ebay_avg,ebay_match_count,last_updated,ebay_search_link\n"
+                f"JJK,Satoru Gojo,,1114,,20.00,10,{today_str},https://example.com/existing\n"
                 "MHA,Himiko Toga,,2159,,,,,\n"
             )
             with open(csv_path, "w", encoding="utf-8", newline="") as f:
@@ -342,11 +342,11 @@ class TestFunkoScraper(unittest.TestCase):
                 lines = f.read().splitlines()
                 self.assertEqual(lines[0], ",".join(OUTPUT_FIELDNAMES))
                 # Row 1 should be untouched
-                self.assertEqual(lines[1], f"JJK,Satoru Gojo,,1114,,https://example.com/existing,10,20.00,{today_str}")
+                self.assertEqual(lines[1], f"JJK,Satoru Gojo,,1114,,20.00,10,{today_str},https://example.com/existing")
                 # Row 2 should be updated
                 self.assertIn("MHA,Himiko Toga,,2159,", lines[2])
-                self.assertIn(",1,25,", lines[2])
-                self.assertTrue(lines[2].endswith(date.today().isoformat()))
+                self.assertIn(",25,1,", lines[2])
+                self.assertIn(date.today().isoformat(), lines[2])
 
     def test_update_funkos_csv_all_already_updated(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -358,8 +358,8 @@ class TestFunkoScraper(unittest.TestCase):
 
             today_str = date.today().isoformat()
             content = (
-                "category,search_name,name,number,key_words,ebay_search_link,ebay_match_count,ebay_avg,last_updated\n"
-                f"JJK,Satoru Gojo,,1114,,https://example.com,10,20.00,{today_str}\n"
+                "category,search_name,name,number,key_words,ebay_avg,ebay_match_count,last_updated,ebay_search_link\n"
+                f"JJK,Satoru Gojo,,1114,,20.00,10,{today_str},https://example.com\n"
             )
             with open(csv_path, "w", encoding="utf-8", newline="") as f:
                 f.write(content)
@@ -381,9 +381,9 @@ class TestFunkoScraper(unittest.TestCase):
 
             # Row 1 is recent (10 days old), Row 2 is expired (35 days old)
             initial_csv_content = (
-                "category,search_name,name,number,key_words,ebay_search_link,ebay_match_count,ebay_avg,last_updated\n"
-                f"JJK,Satoru Gojo,,1114,,https://example.com/gojo,10,20.00,{recent_date}\n"
-                f"MHA,Himiko Toga,,2159,,https://example.com/toga,5,15.00,{expired_date}\n"
+                "category,search_name,name,number,key_words,ebay_avg,ebay_match_count,last_updated,ebay_search_link\n"
+                f"JJK,Satoru Gojo,,1114,,20.00,10,{recent_date},https://example.com/gojo\n"
+                f"MHA,Himiko Toga,,2159,,15.00,5,{expired_date},https://example.com/toga\n"
             )
             with open(csv_path, "w", encoding="utf-8", newline="") as f:
                 f.write(initial_csv_content)
@@ -401,11 +401,11 @@ class TestFunkoScraper(unittest.TestCase):
             with open(csv_path, "r", encoding="utf-8") as f:
                 lines = f.read().splitlines()
                 # Row 1 should be untouched (skipped because it's only 10 days old)
-                self.assertEqual(lines[1], f"JJK,Satoru Gojo,,1114,,https://example.com/gojo,10,20.00,{recent_date}")
+                self.assertEqual(lines[1], f"JJK,Satoru Gojo,,1114,,20.00,10,{recent_date},https://example.com/gojo")
                 # Row 2 should be re-scraped and updated to today's date
                 self.assertIn("MHA,Himiko Toga,,2159,", lines[2])
-                self.assertIn(",1,35,", lines[2])
-                self.assertTrue(lines[2].endswith(date.today().isoformat()))
+                self.assertIn(",35,1,", lines[2])
+                self.assertIn(date.today().isoformat(), lines[2])
 
     def test_update_funkos_csv_no_matches(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -433,7 +433,7 @@ class TestFunkoScraper(unittest.TestCase):
             with open(csv_path, "r", encoding="utf-8") as f:
                 lines = f.read().splitlines()
                 self.assertEqual(lines[0], ",".join(OUTPUT_FIELDNAMES))
-                self.assertTrue(lines[1].endswith(f",0,--,{date.today().isoformat()}"))
+                self.assertIn(f",--,0,{date.today().isoformat()},", lines[1])
 
     def test_update_funkos_csv_dry_run(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -483,7 +483,7 @@ class TestFunkoScraper(unittest.TestCase):
             with open(csv_path, "r", encoding="utf-8") as f:
                 content = f.read()
                 self.assertIn("https://www.ebay.com/sch/i.html?", content)
-                self.assertIn(",1,25,", content)
+                self.assertIn(",25,1,", content)
                 self.assertIn(date.today().isoformat(), content)
 
     def test_update_funkos_csv_search_name_with_custom_box_name(self):
@@ -513,7 +513,7 @@ class TestFunkoScraper(unittest.TestCase):
                 lines = f.read().splitlines()
                 self.assertEqual(lines[0], ",".join(OUTPUT_FIELDNAMES))
                 self.assertIn("AoT,Levi,Captain Levi,1315,aaa,", lines[1])
-                self.assertIn(",1,20,", lines[1])
+                self.assertIn(",20,1,", lines[1])
 
 
 if __name__ == "__main__":
