@@ -623,7 +623,7 @@ def update_funkos_csv(
     # Write back updated rows atomically
     temp_path = csv_path + ".tmp"
     with open(temp_path, "w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
         writer.writeheader()
         writer.writerows(rows)
 

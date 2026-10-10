@@ -183,6 +183,17 @@ Lowest Valued Funko ($5.82):
 
 ---
 
+## Agent Skill: `funkos-from-image`
+
+A specialized agent skill located at `.agents/skills/funkos-from-image/SKILL.md` that encapsulates the full image-to-scraping pipeline:
+
+1. **Verify / Initialize Output CSV**: Validates that the target file is either empty or follows standard Funko schema (via `scripts/verify_funko_csv.py`).
+2. **Decipher Details from Photos**: Extracts `category`, `search_name`, box `name` (override), `number`, and `key_words` (stickers/exclusives).
+3. **Append Entries**: Appends the new rows formatted for scraping.
+4. **Scrape & Report**: Invokes `funko_scraper.py` on the target file and calculates statistics with `funko_stats.py`.
+
+---
+
 ## Running Tests
 
 Run the test suites for both the scraper and stats reporter:
